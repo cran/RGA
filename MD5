@@ -1,10 +1,10 @@
-32733d8458b314706d52f49ff9b12fee *DESCRIPTION
+a3f44b854dae83c09f6a89670ccd3cce *DESCRIPTION
 0d34ef80dd85205661c603816d85b9ce *NAMESPACE
 849503a417198ada0b4316c16418dbda *R/auth.R
-e5c9ca1704e071f89d81db7d555c2a92 *R/convert.R
-32078e56230ece23b466f1699c2045d3 *R/data.R
+1ba6eb3e76c265bc299efebb5cdcab2f *R/convert.R
+2229050d9e9801e33c660e97701007f9 *R/data.R
 49c1dafe47e5b0317f9993f5d9253468 *R/get-data.R
-947720d9727fa126e740f88da342f600 *R/mgmt.R
+79510bf3232f851d6775789b98978398 *R/mgmt.R
 97651d30cddaf64987f6df9d19d3321e *R/onload.R
 5c2c9f5be595fb8a84a3f47e5b355e1c *R/package.R
 f9baa55201bc4c3dead79da14f4cbb20 *R/query.R
@@ -16,7 +16,7 @@ cae5bd86c17a910b7aef7b0c1122c380 *R/sysdata.rda
 e0aac25d948a34fb523fc0ddf47cb547 *README.md
 a6faa9b870c4394314988daa47a4ef81 *man/RGA.Rd
 9b639d08eab02c718f27fd8d4e387a7c *man/authorize.Rd
-4d86d42f305f37dea91585642e3e03cb *man/ga.Rd
+268cc283ddc47e5e9fa3276f25dde74b *man/ga.Rd
 ddbecce8e92640604a8792148f47da29 *man/get_accounts.Rd
 a1a890908ac6b1b52ae7b7e546585d42 *man/get_firstdate.Rd
 50a6069e7037faa492bf410927bb7800 *man/get_ga.Rd
