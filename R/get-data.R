@@ -37,11 +37,16 @@ make_request = function(url, token, simplify = TRUE, verbose = getOption("rga.ve
         request <- GET(url = url, config = config(token = token))
     } else {
         if (token_exists("GAToken")) {
+            if (verbose)
+                message("Use token stored in RGA:::TokenEnv$GAToken.")
             token <- get_token("GAToken")
             stopifnot(inherits(token, "Token2.0"))
             request <- GET(url = url, config = config(token = token))
-        } else
+        } else {
+            if (verbose)
+                message("Send request without authorise data.")
             request <- GET(url = url)
+        }
     }
     # Send query to Google Analytics API and capture the JSON reponse
     if (verbose)
@@ -60,10 +65,11 @@ make_request = function(url, token, simplify = TRUE, verbose = getOption("rga.ve
 
 #' @title Get a Google Analytics API response
 #'
+#' @param type character string including report type.
 #' @param path list including a request parameters.
 #' @param query list including a request parameters.
-#' @param type character string including report type.
 #' @param token \code{\link[httr]{Token2.0}} class object with a valid authorization data.
+#' @param simplify logical. Should the result be simplified to a vector, matrix or data.frame if possible?
 #' @param verbose logical. Should print information verbose?
 #'
 #' @return A list contatin Google Analytics API response.
@@ -74,12 +80,8 @@ make_request = function(url, token, simplify = TRUE, verbose = getOption("rga.ve
 #'
 #' @include url.R
 #'
-get_data <- function(type, query, path, token, simplify = TRUE, test = FALSE, verbose = getOption("rga.verbose", FALSE)) {
-    if (test) {
-        if (verbose)
-            message("Test query...")
-        query$max.results <- 1L
-    }
+get_response <- function(type = c("ga", "rt", "mcf", "mgmt"), path = NULL, query = NULL, token, simplify = TRUE, verbose = getOption("rga.verbose", FALSE)) {
+    type <- match.arg(type)
     url <- build_url(type = type, path = path, query = query)
     data_json <- make_request(url, token = token, simplify = simplify, verbose = verbose)
     return(data_json)
@@ -87,53 +89,51 @@ get_data <- function(type, query, path, token, simplify = TRUE, test = FALSE, ve
 
 #' @include query.R
 #'
-get_pages <- function(type = c("ga", "mcf"), query, total.results, token, verbose = getOption("rga.verbose", FALSE)) {
+get_pages <- function(type = c("ga", "mcf", "mgmt"), path = NULL, query = NULL, total.results, token, verbose = getOption("rga.verbose", FALSE)) {
+    if (verbose)
+        message(paste("Response contain more then", query$max.results, "rows. Batch processing mode enabled."))
     type <- match.arg(type)
     total.pages <- ceiling(total.results / query$max.results)
-    rows <- vector(mode = "list", length = total.pages)
-    for (page in 1:total.pages) {
+    res <- vector(mode = "list", length = total.pages)
+    for (page in 2:total.pages) {
         if (verbose)
             message(paste0("Fetching page ", page, " of ", total.pages, "..."))
         query$start.index <- query$max.results * (page - 1) + 1
-        data_json <- get_data(type = type, query = query, token = token, verbose = verbose)
-        rows[[page]] <- data_json$rows
+        res[[page]] <- get_response(type = type, path = path, query = query, token = token, verbose = verbose)
     }
-    if (inherits(rows[[1]], "matrix") || inherits(rows[[1]], "data.frame"))
-        rows <- do.call(rbind, rows)
-    else if (inherits(rows[[1]], "list"))
-        rows <- do.call(c, rows)
-    return(rows)
+    return(res[-1])
 }
 
 #' @include query.R
 #'
-get_rows <- function(type = c("ga", "mcf", "rt"), query, total.results, token, verbose = getOption("rga.verbose", FALSE)) {
+get_data <- function(type = c("ga", "rt", "mcf", "mgmt"), path = NULL, query = NULL, token, verbose = getOption("rga.verbose", FALSE)) {
     type <- match.arg(type)
-    if (!is.null(query$max.results)) {
-        stopifnot(query$max.results <= 10000)
-        if (query$max.results < total.results)
-            warning(paste("Only", query$max.results, "observations out of", total.results, "were obtained (set max.results = NULL to get all results)."))
-        data_json <- get_data(type = type, query = query, token = token, verbose = verbose)
-        rows <- data_json$rows
+    if (type == "mgmt") {
+        results_limit <- 1000
+        items_name <- "items"
     } else {
-        if (total.results <= 10000) {
-            query$max.results <- total.results
-            data_json <- get_data(type = type, query = query, token = token, verbose = verbose)
-            rows <- data_json$rows
-        } else {
-            if (verbose)
-                message("Response contain more then 10000 rows.")
-            query$max.results <- 10000L
-            if (type == "rt") {
-                warning(paste("Only", query$max.results, "observations out of", total.results, "were obtained (the batch processing mode is not implemented for this report type)."))
-                data_json <- get_data(type = type, query = query, token = token, verbose = verbose)
-                rows <- data_json$rows
-            } else {
-                rows <- get_pages(type = type, query = query, total.results = total.results, verbose = verbose)
-            }
+        results_limit <- 10000
+        items_name <- "rows"
+    }
+    if (is.null(query$max.results)) {
+        pagination <- TRUE
+        query$max.results <- results_limit
+    }
+    else {
+        pagination <- FALSE
+        stopifnot(query$max.results <= results_limit)
+    }
+    data_json <- get_response(type = type, path = path, query = query, token = token, verbose = verbose)
+    if (!isTRUE(pagination) && query$max.results < data_json$totalResults)
+        warning(paste("Only", query$max.results, "observations out of", data_json$totalResults, "were obtained. Set max.results = NULL (default value) to get all results."))
+    if (isTRUE(pagination) && query$max.results < data_json$totalResults) {
+        if (type == "rt")
+            warning(paste("Only", query$max.results, "observations out of", data_json$totalResults, "were obtained (the batch processing mode is not implemented for this report type)."))
+        else {
+            pages <- get_pages(type = type, path = path, query = query, total.results = data_json$totalResults, verbose = verbose)
+            pages <- lapply(pages, `[[`, items_name)
+            data_json[[items_name]] <- c(list(data_json[[items_name]]), pages)
         }
     }
-    if (verbose)
-        message("obtained data.frame with", nrow(rows), "rows and", ncol(rows), "columns.")
-    return(rows)
+    return(data_json)
 }

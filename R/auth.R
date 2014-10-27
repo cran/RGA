@@ -4,7 +4,7 @@ if (getRversion() >= "2.15.1") utils::globalVariables(c("GAToken"))
 # Environment for OAuth token
 TokenEnv <- new.env(parent = emptyenv())
 
-# Check koen exists
+# Check token exists
 token_exists <- function(name) {
     exists(name, envir = TokenEnv)
 }
@@ -20,6 +20,13 @@ get_token <- function(name) {
     get(name, envir = TokenEnv)
 }
 
+# Check environment variables exists
+env_exists <- function(...) {
+    dots <- list(...)
+    res <- lapply(dots, Sys.getenv)
+    vapply(res, nzchar, logical(1))
+}
+
 #' @title Authorize the RGA package to the user's Google Analytics account using OAuth2.0
 #'
 #' @description \code{authorize} function uses \code{\link[httr]{oauth2.0_token}} to obtain the OAuth tokens. Expired tokens will be refreshe automamaticly.
@@ -27,6 +34,7 @@ get_token <- function(name) {
 #' @param client.id character. OAuth client ID. if client.id is missing, we'll look in the environment variable \code{RGA_CONSUMER_ID}.
 #' @param client.secret character. OAuth client secret. if client.secret is missing, we'll look in the environment variable \code{RGA_CONSUMER_SECRET}.
 #' @param cache logical or character. \code{TRUE} means to cache using the default cache file \code{.oauth-httr}, \code{FALSE} means not to cache. A string means to use the specified path as the cache file.
+#' @param verbose logical. Should print information verbose?
 #'
 #' @details
 #'
@@ -71,24 +79,21 @@ get_token <- function(name) {
 #'
 #' @export
 #'
-authorize <- function(client.id, client.secret, cache = TRUE) {
-    client.id_env <- Sys.getenv("RGA_CONSUMER_ID")
-    client.secret_env <- Sys.getenv("RGA_CONSUMER_SECRET")
-    if (missing(client.id) || !nzchar(client.id)) {
-        if (nzchar(client.id_env))
-            client.id <- client.id_env
-        else
-            stop("Clinet ID not specified.")
-    }
-    if (missing(client.secret) || !nzchar(client.secret)) {
-        if (nzchar(client.secret_env))
-            client.secret <- client.secret_env
-        else
-            stop("Clinet secret not specified.")
+authorize <- function(client.id, client.secret, cache = TRUE, verbose = getOption("rga.verbose", FALSE)) {
+    if (missing(client.id) || missing(client.secret)) {
+        if (all(env_exists("RGA_CONSUMER_ID", "RGA_CONSUMER_SECRET"))) {
+            if (verbose)
+                message("client.id and client.secret loaded from environment variables.")
+            client.id <- Sys.getenv("RGA_CONSUMER_ID")
+            client.secret <- Sys.getenv("RGA_CONSUMER_SECRET")
+        } else
+            stop("Clinet ID or Clinet secret not specified.")
     }
     rga_app <- oauth_app(appname = "rga", key = client.id, secret = client.secret)
     token <- oauth2.0_token(endpoint = oauth_endpoints("google"), app = rga_app, cache = cache,
                             scope = "https://www.googleapis.com/auth/analytics.readonly")
+    if (verbose)
+        message("Token saved in RGA:::TokenEnv$GAToken.")
     set_token("GAToken", token)
     invisible(token)
 }
