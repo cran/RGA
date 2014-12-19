@@ -2,25 +2,27 @@
 #' @include utils.R
 #'
 build_path <- function(x) {
-    x <- compact(x)
     params <- names(x)
-    params <- gsub("\\.", "-", params)
-    values <- as.vector(x, mode = "character")
+    values <- as.character(x)
     string <- paste(params, values, sep = "/", collapse = "/")
     string <- sub("^/", "", string)
-    string <- gsub("//", "/", string)
+    string <- gsub("//", "/", string, fixed = TRUE)
     return(string)
 }
 
 # Build URL query string
+#' @importFrom RCurl curlEscape
 #' @include utils.R
 #'
 build_query <- function(x) {
     x <- compact(x)
     params <- names(x)
-    params <- gsub("\\.", "-", params)
-    params <- gsub("profile-id", "ids", params)
-    values <- as.vector(x, mode = "character")
+    params <- sub("profile.id", "ids", params, fixed = TRUE)
+    params <- sub("sampling.level", "samplingLevel", params, fixed = TRUE)
+    params <- gsub(".", "-", params, fixed = TRUE)
+    values <- as.character(x)
+    values <- enc2utf8(values)
+    values <- curlEscape(values)
     string <- paste(params, values, sep = "=", collapse = "&")
     return(string)
 }
@@ -40,16 +42,18 @@ build_query <- function(x) {
 build_url <- function(type = c("ga", "mcf", "rt", "mgmt"), path = NULL, query = NULL) {
     type <- match.arg(type)
     url <- switch(type,
-                       ga = "https://www.googleapis.com/analytics/v3/data/ga",
-                       mcf = "https://www.googleapis.com/analytics/v3/data/mcf",
-                       rt = "https://www.googleapis.com/analytics/v3/data/realtime",
-                       mgmt = "https://www.googleapis.com/analytics/v3/management")
+                  ga = "https://www.googleapis.com/analytics/v3/data/ga",
+                  mcf = "https://www.googleapis.com/analytics/v3/data/mcf",
+                  rt = "https://www.googleapis.com/analytics/v3/data/realtime",
+                  mgmt = "https://www.googleapis.com/analytics/v3/management")
     if (!is.null(path)) {
-        path <- build_path(path)
+        if (length(path) > 1)
+            path <- build_path(path)
         url <- paste(url, path, sep = "/")
     }
     if (!is.null(query)) {
-        query <- build_query(query)
+        if (length(query) > 1)
+            query <- build_query(query)
         url <- paste(url, query, sep = "?")
     }
     return(url)

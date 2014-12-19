@@ -73,7 +73,7 @@ You can return to the Google Developers Console at any time to view the **Client
 Once you have the package loaded, there are 3 steps you need to use to get data from **Google Analytics**:
 
 1. Authorize this package to access your Google Analytics data with the `authorize` function.
-1. Determine the profile ID which you want to get access to with the `get_profiles` function.
+1. Determine the profile ID which you want to get access to with the `list_profiles` function.
 1. Get the results from the API with one of these functions: `get_ga`, `get_mcf` or `get_rt`.
 
 ### Obtain an access token
@@ -88,48 +88,66 @@ After calling this function first time, a web browser will be opened. First entr
 
 When the `authorize` function is used, the `GAToken` variable is created in the separate `TokenEnv` environment which not visible for user. So, there is no need to pass every time the `token` argument to any function which requires authorization.
 
-Access token can also be stored in a variable and passed as the argument to the functions which request the API Google Analytics. It can be useful when you are working with several accounts at the same time.
-
-```R
-ga_token <- authorize(client.id = "My_Client_ID", client.secret = "My_Client_secret")
-get_profiles(token = ga_token)
-```
+Access token can also be stored in a variable and passed as the argument to the functions which request the API Google Analytics. It can be useful when you are working with several accounts at the same time (for details see next subsection).
 
 When the `cache` argument is ​​assigned the `TRUE` (default) and  the `httr_oauth_cache` option is not changed, then after successful authorization the `.httr-oauth` file with access data to Google API will be created in the current working directory. The `.httr-oauth` file is used between sessions, i.e. at a subsequent call to the `authorize`  function and authorization in the browser tab is not required. Using the `cache` argument you can also cancel the creation of the file (`FALSE` value) or specify an alternate path to the file storage (in this case It is necessary to specify the path and file name explicitly).
 
-Note: Besides the explicit specifying of the `client.id` and `client.secret` arguments, their values ​​can be defined via environment variables: `RGA_CONSUMER_ID` and `RGA_CONSUMER_SECRET`. In this case, specifying of the `client.id` and `client.secret` arguments is not required for calling `authorize` function.
+Note: Besides the explicit specifying of the `client.id` and `client.secret` arguments, their values ​​can be defined via environment variables: `RGA_CLIENT_ID` and `RGA_CLIENT_SECRET`. In this case, specifying of the `client.id` and `client.secret` arguments is not required for calling `authorize` function.
 
 Setting the environment variables is different for various operating systems. The user should refer to the relevant reference materials (view the list of references at the end of this manual). Also there is a setup method of the environment variables when running R sessions using the `.Renviron` files in the user's working or home directory. Contents of the file might look like this:
 
 ```txt
-RGA_CONSUMER_ID="My_Client_ID"
-RGA_CONSUMER_SECRET="My_Client_secret"
+RGA_CLIENT_ID="Client_ID"
+RGA_CLIENT_SECRET="Client_secret"
 ```
 
 Environment variables can also be set directly from R session using the `Sys.setenv` function. For instance:
 
 ```R
-Sys.setenv(RGA_CONSUMER_ID = "My_Client_ID", RGA_CONSUMER_SECRET = "My_Client_secret")
+Sys.setenv(RGA_CLIENT_ID = "Client_ID", RGA_CLIENT_SECRET = "Client_secret")
 ```
 
 This string can be added to the file `.Rprofile` in the user's current оr home directory in order to set these variables automatically when the R session starts.
 
+#### Getting access to GA API with multiple tokens
+
+If you want to work with `RGA` package with multiple client.ids and client.secrets from different accounts (for example from business account at work and personal account at home) you need to clearly distinguish them. The best way in this case is creating two different tokens with disabled `cache` option:
+
+```R
+work_token <- authorize(client.id1, client.secret1, cache = FALSE)
+home_token <- authorize(client.id2, client.secret2, cache = FALSE)
+```
+
+or define a specific cache path for each token:
+
+```R
+work_token <- authorize(client.id1, client.secret1, cache = "work.token")
+home_token <- authorize(client.id2, client.secret2, cache = "home.token")
+```
+
+Then pass this token to other functions:
+
+```R
+list_profiles(token = work_token)
+list_profiles(token = home_token)
+```
+
 ### Obtain the access to the Management API
 
-To access the Management API Google Analytics package `RGA` provides the following functions: `get_accounts`, `get_webproperties`, `get_profiles`, `get_goals` и `get_segments`. Each of these functions return a table of data (`data.frame`), with the relevant content.
+To access the Management API Google Analytics package `RGA` provides the following functions: `list_accounts`, `list_webproperties`, `list_profiles`, `list_goals` и `list_segments`. Each of these functions return a table of data (`data.frame`), with the relevant content.
 
 Let's review these functions in details:
 
-* `get_accounts` - getting the list of accounts which the user has access to;
-* `get_webproperties` - getting a list of web properties (Web Properties) which the user has access to;
-* `get_profiles` - getting a list of web properties (Web Properties) and views (Profiles) sites which the user has access to;
-* `get_goals` - obtaining a list of goals which the user has access to;
-* `get_segments` - obtaining a list of segments which the user has access to;
+* `list_accounts` - getting the list of accounts which the user has access to;
+* `list_webproperties` - getting a list of web properties (Web Properties) which the user has access to;
+* `list_profiles` - getting a list of web properties (Web Properties) and views (Profiles) sites which the user has access to;
+* `list_goals` - obtaining a list of goals which the user has access to;
+* `list_segments` - obtaining a list of segments which the user has access to;
 
-The functions such as `get_webproperties`, `get_profiles` and `get_goals` can be specified with the additional arguments such as `account.id`, `webproperty.id` or `profile.id`  which are required to obtain the information for specific account, resource or profile (view the help pages for the corresponding functions). This is an example of obtaining the information on all views (profiles):
+The functions such as `list_webproperties`, `list_profiles` and `list_goals` can be specified with the additional arguments such as `account.id`, `webproperty.id` or `profile.id`  which are required to obtain the information for specific account, resource or profile (view the help pages for the corresponding functions). This is an example of obtaining the information on all views (profiles):
 
 ```R
-get_profiles()
+list_profiles()
 ```
 
 ### Obtain an access to the Reporting API
@@ -142,14 +160,15 @@ To access the Reporting API Google Analytics package `RGA` provides the followin
 
 The following parameters are available for queries to the API reports:
 
-* `profile.id` - profile (view) ID. Can be obtained using the `get_profiles` or via the web interface Google Analytics;
+* `profile.id` - profile (view) ID. Can be obtained using the `list_profiles` or via the web interface Google Analytics. Can be obtained using the `list_profiles` or via the web interface Google Analytics;
 * `start.date` - the start date for collecting data formatted as YYYY-MM-DD. Also values such as "today", "yesterday", "ndaysAgo" are allowed, where n is the number of days;
 * `end.date` - the end date for collecting data formatted as YYYY-MM-DD. Also values such as "today", "yesterday", "ndaysAgo" are allowed, where n is the number of days;
 * `metrics` -  comma-separated list of values ​​of metrics (metrics), for example, `"ga:sessions,ga:bounces"`. The number of metrics cannot exceed 10 indicators for a single request;
 * `dimensions` - comma-separated list of values ​​of measurements (dimensions), for example, `"ga:browser,ga:city"`. The number of dimensions cannot exceed 7 measurements at a single request;
 * `sort` - comma-separated list of metrics (metrics) and measurements (dimensions) which determine the order and direction of sorting data. The reverse sort order is defined by “-“ before the relevant metric;
 * `filters` - comma-separated list of metric (metrics) and measurement (dimensions) filters that are imposed when data is selected;
-* `segment` - segments that are used when retrieving data. Can be obtained using the `get_segments` or via the web interface Google Analytics;
+* `segment` - segments that are used when retrieving data. Can be obtained using the `list_segments` or via the web interface Google Analytics;
+* `sampling.level` - the desired sampling level. Allowed values: "default", "faster", "higher_precision";
 * `start.index` - index of the first returned result (line number);
 * `max.results` - maximum number of fields (rows) of the returned results;
 * `token` - object of class `Token2.0` which contains data with a valid authorization data. Can be obtained using the `authorize` function;
@@ -272,3 +291,13 @@ show_dimsmets(ga)
 * [Setting environment variables in Windows XP](http://support.microsoft.com/kb/310519)
 * [Setting environment variables in earlier versions of OSX](https://developer.apple.com/library/mac/#documentation/MacOSX/Conceptual/BPRuntimeConfig/Articles/EnvironmentVars.html)
 * [Setting environment variables in Ubuntu Linux](https://help.ubuntu.com/community/EnvironmentVariables)
+
+## Bug reports
+
+To report a bug please type into R:
+
+```R
+utils::bug.report(package = "RGA")
+```
+
+or open this URL in browser: https://bitbucket.org/unikum/rga/issues.

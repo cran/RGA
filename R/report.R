@@ -1,72 +1,65 @@
-#' @title Get Anaytics data for a view (profile)
+#' @title Get the Anaytics reporting data
 #'
-#' @description
-#' \code{get_report} provide a query the Core or Multi-Channel Funnels Reporting API for Google Analytics report data.
-#'
-#' @param type character. Report type.
-#' @param query \code{GAQuery} class object including a request parameters.
+#' @param type character. Report type. Allowed values: ga, mcf, rt.
+#' @param query list. List of the data request query parameters.
 #' @param token \code{\link[httr]{Token2.0}} class object with a valid authorization data.
 #' @param verbose logical. Should print information verbose?
 #'
-#' @return A data frame with Google Analytics reporting data. Columns are metrics and dimesnions.
+#' @return A data frame including the Analytics data for a view (profile).
+#'
+#' @keywords internal
+#'
+#' @include query.R
+#' @include get-data.R
+#' @include convert.R
+#'
+#' @noRd
 #'
 #' @examples
 #' \dontrun{
 #' # get token data
 #' authorize(client.id = "myID", client.secret = "mySecret")
 #' # set query
-#' ga_query <- set_query("myProfileID", start.date = "30daysAgo", end.date = "today",
-#'                       metrics = "ga:sessions", dimensions = "ga:source,ga:medium"
-#'                       sort = "-ga:sessions")
+#' query <- list(profile.id = "XXXXXXXX", start.date = "31daysAgo", end.date = "today",
+#'               metrics = "ga:users,ga:sessions", dimensions = "ga:userType")
+
 #' # get report data
-#' ga_data <- get_report(ga_query, type = "ga")
+#' ga_data <- get_report(type = "ga", query = query)
 #' }
 #'
-#' @seealso \code{\link{authorize}} \code{\link{set_query}}
-#'
-#' @family The Google Analytics Reporting API
-#'
-#' @keywords internal
-#'
-#' @include get-data.R
-#' @include convert.R
-#'
-#' @export
-#'
-get_report <- function(type = c("ga", "mcf", "rt"), query, token, verbose = getOption("rga.verbose", FALSE)) {
+get_report <- function(type = c("ga", "mcf", "rt"), query, token, verbose = getOption("rga.verbose")) {
     type <- match.arg(type)
+    query <- fix_query(query)
     data_json <- get_data(type = type, query = query, token = token, verbose = verbose)
     rows <- data_json$rows
     cols <- data_json$columnHeaders
-    if (data_json$totalResults == 0 || is.null(rows)) {
-        if (verbose)
-            message("No results were obtained.")
-        rows <- matrix(NA, nrow = 1L, ncol = nrow(cols))
+    if (data_json$totalResults == 0L || is.null(rows)) {
+        message("No results were obtained.")
+        return(NULL)
     }
     if (is.list(rows)) {
-        if (is.matrix(rows[[1]]))
+        if (is.matrix(rows[[1L]]))
             rows <- do.call(rbind, rows)
-        else if (is.list(rows[[1]]))
+        else if (is.list(rows[[1L]]) && !is.data.frame(rows[[1L]]))
             rows <- do.call(c, rows)
     }
     if (!is.null(data_json$containsSampledData) && data_json$containsSampledData)
-        warning("Data contains sampled data.")
+        warning("Data contains sampled data.", call. = FALSE)
     data_df <- build_df(type, rows, cols, verbose = verbose)
-    formats <- cols$dataType
-    data_df <- convert_datatypes(data_df, formats, verbose = verbose)
     return(data_df)
 }
 
 #' @title Get the Anaytics data from Core Reporting API for a view (profile)
 #'
-#' @param profile.id string or integer. Unique table ID for retrieving Analytics data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID.
+#' @param profile.id integer or character. Unique table ID for retrieving Analytics data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID. Can be obtained using the \code{\link{list_profiles}} or via the web interface Google Analytics.
 #' @param start.date character. Start date for fetching Analytics data. Request can specify the start date formatted as YYYY-MM-DD or as a relative date (e.g., today, yesterday, or 7daysAgo). The default value is 7daysAgo.
 #' @param end.date character. End date for fetching Analytics data. Request can specify the end date formatted as YYYY-MM-DD or as a relative date (e.g., today, yesterday, or 7daysAgo). The default value is yesterday.
 #' @param metrics character. A comma-separated list of Analytics metrics. E.g., \code{"ga:sessions,ga:pageviews"}. At least one metric must be specified.
 #' @param dimensions character. A comma-separated list of Analytics dimensions. E.g., \code{"ga:browser,ga:city"}.
 #' @param sort  character. A comma-separated list of dimensions or metrics that determine the sort order for Analytics data.
 #' @param filters character. A comma-separated list of dimension or metric filters to be applied to Analytics data.
-#' @param segment character. An Analytics segment to be applied to data. Can be obtained using the \code{\link{get_segments}} or via the web interface Google Analytics.
+#' @param segment character. An Analytics segment to be applied to data. Can be obtained using the \code{\link{list_segments}} or via the web interface Google Analytics.
+#' @param sampling.level character. The desired sampling level. Allowed values: "default", "faster", "higher_precision".
 #' @param start.index integer. An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
 #' @param max.results integer. The maximum number of entries to include in this feed.
 #' @param token \code{\link[httr]{Token2.0}} class object with a valid authorization data.
@@ -78,6 +71,8 @@ get_report <- function(type = c("ga", "mcf", "rt"), query, token, verbose = getO
 #' \href{https://developers.google.com/analytics/devguides/reporting/core/dimsmets}{Core Reporting API - Dimensions & Metrics Reference}
 #'
 #' \href{https://developers.google.com/analytics/devguides/reporting/core/v3/common-queries}{Core Reporting API - Common Queries}
+#'
+#' \href{https://ga-dev-tools.appspot.com/explorer/}{oogle Analytics Demos & Tools - Query Explorer}
 #'
 #' @seealso \code{\link{authorize}}
 #'
@@ -93,34 +88,35 @@ get_report <- function(type = c("ga", "mcf", "rt"), query, token, verbose = getO
 #'                   sort = "-ga:sessions")
 #' }
 #'
-#' @include query.R
-#'
 #' @export
 #'
 get_ga <- function(profile.id, start.date = "7daysAgo", end.date = "yesterday",
                    metrics = "ga:users,ga:sessions,ga:pageviews", dimensions = NULL,
-                   sort = NULL, filters = NULL, segment = NULL, start.index = NULL, max.results = NULL,
-                   token, verbose = getOption("rga.verbose", FALSE)) {
+                   sort = NULL, filters = NULL, segment = NULL, sampling.level = NULL,
+                   start.index = NULL, max.results = NULL,
+                   token, verbose = getOption("rga.verbose")) {
     stopifnot(!is.null(profile.id), nzchar(profile.id),
               !is.null(start.date), nzchar(start.date),
               !is.null(end.date), nzchar(end.date),
               !is.null(metrics), nzchar(metrics))
-    query <- set_query(profile.id = profile.id, start.date = start.date, end.date = end.date,
-                       metrics = metrics, dimensions = dimensions, sort = sort, filters = filters,
-                       segment = segment, start.index = start.index, max.results = max.results)
-    res <- get_report(query = query, type = "ga", token = token, verbose = verbose)
+    query <- list(profile.id = profile.id, start.date = start.date, end.date = end.date,
+                  metrics = metrics, dimensions = dimensions, sort = sort, filters = filters,
+                  segment = segment, sampling.level = match.arg(sampling.level, c("default", "faster", "higher_precision")),
+                  start.index = start.index, max.results = max.results)
+    res <- get_report(type = "ga", query = query, token = token, verbose = verbose)
     return(res)
 }
 
 #' @title Get the Anaytics data from Multi-Channel Funnels Reporting API for a view (profile)
 #'
-#' @param profile.id string or integer. Unique table ID for retrieving Analytics data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID.
+#' @param profile.id integer or character. Unique table ID for retrieving Analytics data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID. Can be obtained using the \code{\link{list_profiles}} or via the web interface Google Analytics.
 #' @param start.date character. Start date for fetching Analytics data. Request can specify a start date formatted as YYYY-MM-DD or as a relative date (e.g., today, yesterday, or 7daysAgo). The default value is 7daysAgo.
 #' @param end.date character. End date for fetching Analytics data. Request can specify an end date formatted as YYYY-MM-DD or as a relative date (e.g., today, yester-day, or 7daysAgo). The default value is yesterday.
 #' @param metrics character. A comma-separated list of Multi-Channel Funnels metrics. E.g., \code{"mcf:totalConversions,mcf:totalConversionValue"}. At least one metric must be specified.
 #' @param dimensions character. A comma-separated list of Multi-Channel Funnels dimensions. E.g., code{"mcf:source,mcf:medium"}.
 #' @param sort character. character. A comma-separated list of dimensions or metrics that determine the sort order for Analytics data.
 #' @param filters character. A comma-separated list of dimension or metric filters to be applied to Analytics data.
+#' @param sampling.level character. The desired sampling level. Allowed values: "default", "faster", "higher_precision".
 #' @param start.index integer. An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.
 #' @param max.results integer. The maximum number of entries to include in this feed.
 #' @param token \code{\link[httr]{Token2.0}} class object with a valid authorization data.
@@ -142,31 +138,31 @@ get_ga <- function(profile.id, start.date = "7daysAgo", end.date = "yesterday",
 #' # get report data
 #' ga_data <- get_mcf("myProfileID", start.date = "30daysAgo", end.date = "today",
 #'                    metrics = "mcf:totalConversions",
-#'                    dimensions = "mcf:totalConversions,mcf:totalConversionValue")
+#'                    dimensions = "mcf:source,mcf:medium")
 #' }
-#'
-#' @include query.R
 #'
 #' @export
 #'
 get_mcf <- function(profile.id, start.date = "7daysAgo", end.date = "yesterday",
                     metrics = "mcf:totalConversions", dimensions = NULL,
-                    sort = NULL, filters = NULL, start.index = NULL, max.results = NULL,
-                    token, verbose = getOption("rga.verbose", FALSE)) {
+                    sort = NULL, filters = NULL, sampling.level = NULL,
+                    start.index = NULL, max.results = NULL,
+                    token, verbose = getOption("rga.verbose")) {
     stopifnot(!is.null(profile.id), nzchar(profile.id),
               !is.null(start.date), nzchar(start.date),
               !is.null(end.date), nzchar(end.date),
               !is.null(metrics), nzchar(metrics))
-    query <- set_query(profile.id = profile.id, start.date = start.date, end.date = end.date,
-                       metrics = metrics, dimensions = dimensions, sort = sort, filters = filters,
-                       start.index = start.index, max.results = max.results)
-    res <- get_report(query = query, type = "mcf", token = token, verbose = verbose)
+    query <- list(profile.id = profile.id, start.date = start.date, end.date = end.date,
+                  metrics = metrics, dimensions = dimensions, sort = sort, filters = filters,
+                  sampling.level = match.arg(sampling.level, c("default", "faster", "higher_precision")),
+                  start.index = start.index, max.results = max.results)
+    res <- get_report(type = "mcf", query = query, token = token, verbose = verbose)
     return(res)
 }
 
 #' @title Get the Anaytics data from Real Time Reporting API for a view (profile)
 #'
-#' @param profile.id string or integer. Unique table ID for retrieving Analytics data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID.
+#' @param profile.id integer or character. Unique table ID for retrieving Analytics data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID. Can be obtained using the \code{\link{list_profiles}} or via the web interface Google Analytics.
 #' @param metrics character. A comma-separated list of real time metrics. E.g., \code{"rt:activeUsers"}. At least one metric must be specified.
 #' @param dimensions character. A comma-separated list of real time dimensions. E.g., \code{"rt:medium,rt:city"}.
 #' @param sort character. A comma-separated list of dimensions or metrics that determine the sort order for real time data.
@@ -198,24 +194,22 @@ get_mcf <- function(profile.id, start.date = "7daysAgo", end.date = "yesterday",
 #' }
 #' }
 #'
-#' @include query.R
-#'
 #' @export
 #'
 get_rt <- function(profile.id, metrics = "rt:activeUsers", dimensions = NULL,
                          sort = NULL, filters = NULL, max.results = NULL,
-                         token, verbose = getOption("rga.verbose", FALSE)) {
+                         token, verbose = getOption("rga.verbose")) {
     stopifnot(!is.null(profile.id), nzchar(profile.id),
               !is.null(metrics), nzchar(metrics))
-    query <- set_query(profile.id = profile.id, metrics = metrics, dimensions = dimensions,
-                       sort = sort, filters = filters, max.results = max.results)
-    res <- get_report(query = query, type = "rt", token = token, verbose = verbose)
+    query <- list(profile.id = profile.id, metrics = metrics, dimensions = dimensions,
+                  sort = sort, filters = filters, max.results = max.results)
+    res <- get_report(type = "rt", query = query, token = token, verbose = verbose)
     return(res)
 }
 
 #' @title Get the first date with available data
 #'
-#' @param profile.id Google Analytics profile ID.
+#' @param profile.id Google Analytics profile ID. Can be obtained using the \code{\link{list_profiles}} or via the web interface Google Analytics.
 #' @param token \code{\link[httr]{Token2.0}} class object with a valid authorization data.
 #' @param verbose logical. Should print information verbose?
 #'
@@ -228,12 +222,12 @@ get_rt <- function(profile.id, metrics = "rt:activeUsers", dimensions = NULL,
 #' @examples
 #' \dontrun{
 #' authorize(client.id = "myID", client.secret = "mySecret")
-#' first.date <- get_firstdate(profile.id = "myProfileID")
+#' first_date <- get_firstdate(profile.id = "myProfileID")
 #' }
 #'
 #' @export
 #'
-get_firstdate <- function(profile.id, token, verbose = getOption("rga.verbose", FALSE)) {
+get_firstdate <- function(profile.id, token, verbose = getOption("rga.verbose")) {
     res <- suppressWarnings(
         get_ga(profile.id = profile.id, start.date = "2005-01-01", end.date = "today",
                metrics = "ga:sessions", dimensions = "ga:date", filters = "ga:sessions>0",

@@ -31,8 +31,8 @@ env_exists <- function(...) {
 #'
 #' @description \code{authorize} function uses \code{\link[httr]{oauth2.0_token}} to obtain the OAuth tokens. Expired tokens will be refreshe automamaticly.
 #'
-#' @param client.id character. OAuth client ID. if client.id is missing, we'll look in the environment variable \code{RGA_CONSUMER_ID}.
-#' @param client.secret character. OAuth client secret. if client.secret is missing, we'll look in the environment variable \code{RGA_CONSUMER_SECRET}.
+#' @param client.id character. OAuth client ID. if client.id is missing, we'll look in the environment variable \code{RGA_CLIENT_ID}.
+#' @param client.secret character. OAuth client secret. if client.secret is missing, we'll look in the environment variable \code{RGA_CLIENT_SECRET}.
 #' @param cache logical or character. \code{TRUE} means to cache using the default cache file \code{.oauth-httr}, \code{FALSE} means not to cache. A string means to use the specified path as the cache file.
 #' @param verbose logical. Should print information verbose?
 #'
@@ -63,12 +63,14 @@ env_exists <- function(...) {
 #' @seealso
 #' Other OAuth: \code{\link[httr]{oauth_app}} \code{\link[httr]{oauth2.0_token}} \code{\link[httr]{Token-class}}
 #'
+#' To revoke all tokens: \code{\link[httr]{revoke_all}}
+#'
 #' Setup environment variables: \code{\link{Startup}}
 #'
 #' @examples
 #' \dontrun{
 #' authorize(client.id = "myID", client.secret = "mySecret")
-#' # if set RGA_CONSUMER_ID and RGA_CONSUMER_SECRET environment variables
+#' # if set RGA_CLIENT_ID and RGA_CLIENT_SECRET environment variables
 #' authorize()
 #' # assign token to variable
 #' ga_token <- authorize(client.id = "myID", client.secret = "mySecret")
@@ -79,15 +81,15 @@ env_exists <- function(...) {
 #'
 #' @export
 #'
-authorize <- function(client.id, client.secret, cache = TRUE, verbose = getOption("rga.verbose", FALSE)) {
+authorize <- function(client.id, client.secret, cache = getOption("rga.cache"), verbose = getOption("rga.verbose")) {
     if (missing(client.id) || missing(client.secret)) {
-        if (all(env_exists("RGA_CONSUMER_ID", "RGA_CONSUMER_SECRET"))) {
+        if (all(env_exists("RGA_CLIENT_ID", "RGA_CLIENT_SECRET"))) {
             if (verbose)
                 message("client.id and client.secret loaded from environment variables.")
-            client.id <- Sys.getenv("RGA_CONSUMER_ID")
-            client.secret <- Sys.getenv("RGA_CONSUMER_SECRET")
+            client.id <- Sys.getenv("RGA_CLIENT_ID")
+            client.secret <- Sys.getenv("RGA_CLIENT_SECRET")
         } else
-            stop("Clinet ID or Clinet secret not specified.")
+            stop("Client ID or Clinet secret not specified.")
     }
     rga_app <- oauth_app(appname = "rga", key = client.id, secret = client.secret)
     token <- oauth2.0_token(endpoint = oauth_endpoints("google"), app = rga_app, cache = cache,
