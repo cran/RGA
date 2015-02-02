@@ -1,59 +1,31 @@
-# Build URL path
-#' @include utils.R
-#'
-build_path <- function(x) {
-    params <- names(x)
-    values <- as.character(x)
-    string <- paste(params, values, sep = "/", collapse = "/")
-    string <- sub("^/", "", string)
-    string <- gsub("//", "/", string, fixed = TRUE)
-    return(string)
-}
+base_api_url <- "https://www.googleapis.com/analytics"
+base_api_version <- "v3"
 
-# Build URL query string
+# Build URL for Google Analytics request
 #' @importFrom RCurl curlEscape
 #' @include utils.R
-#'
-build_query <- function(x) {
-    x <- compact(x)
-    params <- names(x)
-    params <- sub("profile.id", "ids", params, fixed = TRUE)
-    params <- sub("sampling.level", "samplingLevel", params, fixed = TRUE)
-    params <- gsub(".", "-", params, fixed = TRUE)
-    values <- as.character(x)
-    values <- enc2utf8(values)
-    values <- curlEscape(values)
-    string <- paste(params, values, sep = "=", collapse = "&")
-    return(string)
-}
-
-#' @title Build URL for Google Analytics request
-#'
-#' @param type type of Google Analytics API data.
-#' @param path URL path. May be list or character.
-#' @param query URL query string. May be list or character.
-#'
-#' @return Character string.
-#'
-#' @keywords internal
-#'
-#' @noRd
-#'
-build_url <- function(type = c("ga", "mcf", "rt", "mgmt"), path = NULL, query = NULL) {
+get_url <- function(type = c("ga", "mcf", "rt", "mgmt"), path = NULL, query = NULL) {
     type <- match.arg(type)
-    url <- switch(type,
-                  ga = "https://www.googleapis.com/analytics/v3/data/ga",
-                  mcf = "https://www.googleapis.com/analytics/v3/data/mcf",
-                  rt = "https://www.googleapis.com/analytics/v3/data/realtime",
-                  mgmt = "https://www.googleapis.com/analytics/v3/management")
-    if (!is.null(path)) {
-        if (length(path) > 1)
-            path <- build_path(path)
+    type <- switch(type,
+                  ga = "data/ga",
+                  mcf = "data/mcf",
+                  rt = "data/realtime",
+                  mgmt = "management")
+    url <- paste(base_api_url, base_api_version, type, sep = "/")
+    if (!is.null(path))
         url <- paste(url, path, sep = "/")
-    }
     if (!is.null(query)) {
-        if (length(query) > 1)
-            query <- build_query(query)
+        if (is.list(query)) {
+            query <- compact(query)
+            params <- names(query)
+            params <- sub("profile.id", "ids", params, fixed = TRUE)
+            params <- sub("sampling.level", "samplingLevel", params, fixed = TRUE)
+            params <- gsub(".", "-", params, fixed = TRUE)
+            values <- as.character(query)
+            values <- enc2utf8(values)
+            values <- curlEscape(values)
+            query <- paste(params, values, sep = "=", collapse = "&")
+        }
         url <- paste(url, query, sep = "?")
     }
     return(url)
