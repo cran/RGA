@@ -1,6 +1,6 @@
 Package: RGA
 Type: Package
-Title: A Google Analytics API client for R
+Title: A Google Analytics API Client
 Description: Provides functions for accessing and retrieving data from the
     Google Analytics APIs (https://developers.google.com/analytics/). Supports
     OAuth 2.0 authorization. Package provides access to the Management, Core
@@ -11,7 +11,7 @@ Description: Provides functions for accessing and retrieving data from the
     shiny app to explore the core reporting API dimensions and metrics.
 URL: https://bitbucket.org/unikum/rga
 BugReports: https://bitbucket.org/unikum/rga/issues
-Version: 0.2
+Version: 0.2.1
 Date: 2014-06-03
 Authors@R: c(
     person(given = "Artem", family = "Klevtsov",
@@ -32,11 +32,11 @@ Collate: 'utils.R' 'url.R' 'auth.R' 'request.R' 'get-data.R'
 Suggests: knitr, testthat
 VignetteBuilder: knitr
 LazyData: true
-Packaged: 2015-02-02 08:08:48 UTC; xxx
+Packaged: 2015-03-17 07:27:02 UTC; xxx
 Author: Artem Klevtsov [aut, cre],
   Philipp Upravitelev [ctb],
   Olga Shramko [ctb]
 Maintainer: Artem Klevtsov <a.a.klevtsov@gmail.com>
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2015-02-02 09:46:35
+Date/Publication: 2015-03-17 10:32:40

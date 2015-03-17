@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="date" content="2015-02-02" />
+<meta name="date" content="2015-03-17" />
 
 <title>Obtain access to the Metadata API</title>
 
@@ -52,7 +52,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 <div id="header">
 <h1 class="title">Obtain access to the Metadata API</h1>
-<h4 class="date"><em>2015-02-02</em></h4>
+<h4 class="date"><em>2015-03-17</em></h4>
 </div>
 
 
@@ -61,31 +61,31 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <ul>
 <li><code>id</code> - the parameter code name (metric or dimension) (used for queries);</li>
 <li><code>type</code> - parameter type: metric (METRIC) or dimension (DIMENSION);</li>
-<li><code>dataType</code> - data type: STRING, INTEGER, PERCENT, TIME, CURRENCY, FLOAT;</li>
+<li><code>data.type</code> - data type: STRING, INTEGER, PERCENT, TIME, CURRENCY, FLOAT;</li>
 <li><code>group</code> - group of parameters (ex. User, Session, Traffic Sources);</li>
 <li><code>status</code> - status: actual (PUBLIC) or outdated (DEPRECATED);</li>
-<li><code>uiName</code> - parameter name (not used for queries);</li>
+<li><code>ui.name</code> - parameter name (not used for queries);</li>
 <li><code>description</code> - parameter description;</li>
-<li><code>allowedInSegments</code> - whether the parameter can be used in the segments;</li>
-<li><code>replacedBy</code> - name of the replacement parameter, if the parameter is deprecated;</li>
+<li><code>allowed.in.segments</code> - whether the parameter can be used in the segments;</li>
+<li><code>replaced.by</code> - name of the replacement parameter, if the parameter is deprecated;</li>
 <li><code>calculation</code> - formula of calculating the parameter value, if the parameter is calculated based on other parameters;</li>
-<li><code>minTemplateIndex</code> - if the parameter contains a numeric index, the minimum parameter index;</li>
-<li><code>maxTemplateIndex</code> - if the parameter contains a numeric index, the maximum parameter index;</li>
-<li><code>premiumMinTemplateIndex</code> - if the parameter contains a numeric index, a minimum index for the parameter;</li>
-<li><code>premiumMaxTemplateIndex</code> - if the parameter contains a numeric index, a maximum index for the parameter.</li>
+<li><code>min.template.index</code> - if the parameter contains a numeric index, the minimum parameter index;</li>
+<li><code>max.template.index</code> - if the parameter contains a numeric index, the maximum parameter index;</li>
+<li><code>premium.min.template.index</code> - if the parameter contains a numeric index, a minimum index for the parameter;</li>
+<li><code>premium.max.template.index</code> - if the parameter contains a numeric index, a maximum index for the parameter.</li>
 </ul>
 <p>There are several examples of usage the metadata Google Analytics API.</p>
 <div id="examples" class="section level2">
 <h2>Examples</h2>
 <pre class="sourceCode r"><code class="sourceCode r">ga_meta &lt;-<span class="st"> </span><span class="kw">list_metadata</span>()</code></pre>
 <p>List of all outdated parameters and those ones which were replaced:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">subset</span>(ga_meta, status ==<span class="st"> &quot;DEPRECATED&quot;</span>, <span class="kw">c</span>(id, replacedBy))</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">subset</span>(ga_meta, status ==<span class="st"> &quot;DEPRECATED&quot;</span>, <span class="kw">c</span>(id, replaced.by))</code></pre>
 <p>List of all parameters from certain group:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">subset</span>(ga_meta, group ==<span class="st"> &quot;Traffic Sources&quot;</span>, <span class="kw">c</span>(id, type))</code></pre>
 <p>List of all calculated parameters:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">subset</span>(ga_meta, !<span class="kw">is.na</span>(calculation), <span class="kw">c</span>(id, calculation))</code></pre>
 <p>List of all parameters allowed in segments:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">subset</span>(ga_meta, allowedInSegments, id)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">subset</span>(ga_meta, allowed.in.segments, id)</code></pre>
 <p><code>RGA</code> package also provide the shiny demo app to access <code>ga</code> dataset:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dimsmets</span>(ga_meta)</code></pre>
 </div>
