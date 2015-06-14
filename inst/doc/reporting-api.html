@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="date" content="2015-03-17" />
+<meta name="date" content="2015-06-14" />
 
 <title>Obtain an access to the Reporting API</title>
 
@@ -52,7 +52,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 <div id="header">
 <h1 class="title">Obtain an access to the Reporting API</h1>
-<h4 class="date"><em>2015-03-17</em></h4>
+<h4 class="date"><em>2015-06-14</em></h4>
 </div>
 
 
@@ -98,8 +98,8 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>In order to avoid this, you can split the query into multiple small queries (day-by-day). You can get this day-by-day data by using the following code:</p>
 <pre class="sourceCode r"><code class="sourceCode r">dates &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="kw">as.Date</span>(<span class="st">&quot;2012-01-01&quot;</span>), <span class="kw">as.Date</span>(<span class="st">&quot;2012-02-01&quot;</span>), <span class="dt">by =</span> <span class="st">&quot;days&quot;</span>)
 ga_data &lt;-<span class="st"> </span><span class="kw">aggregate</span>(. ~<span class="st"> </span>keyword, <span class="dt">FUN =</span> sum,
-                     <span class="dt">data =</span> <span class="kw">do.call</span>(rbind, <span class="kw">lapply</span>(dates, function(d) {
-                       <span class="kw">get_ga</span>(<span class="dt">profile.id =</span> XXXXXXXX, <span class="dt">start.date =</span> d, <span class="dt">end.date =</span> d,
+                     <span class="dt">data =</span> <span class="kw">do.call</span>(rbind, <span class="kw">lapply</span>(dates, function(date) {
+                       <span class="kw">get_ga</span>(<span class="dt">profile.id =</span> XXXXXXXX, <span class="dt">start.date =</span> date, <span class="dt">end.date =</span> date,
                        <span class="dt">metrics =</span> <span class="st">&quot;ga:sessions&quot;</span>, <span class="dt">dimensions =</span> <span class="st">&quot;ga:keyword&quot;</span>,
                        <span class="dt">filter =</span> <span class="st">&quot;ga:medium==organic;ga:keyword!=(not provided);ga:keyword!=(not set)&quot;</span>)})))</code></pre>
 <p>Note: a formula in <code>aggregate</code> function should include all Google Analyitcs dimensions without prefix (“ga:” or “mcf:”).</p>

@@ -1,3 +1,8 @@
-## ----, echo = FALSE, message = FALSE-------------------------------------
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+## ---- echo = FALSE, message = FALSE--------------------------------------
+knitr::opts_chunk$set(
+    comment = "#>",
+    collapse = TRUE,
+    error = FALSE,
+    tidy = FALSE
+)
 

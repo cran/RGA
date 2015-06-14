@@ -28,7 +28,7 @@
 #'
 #' \href{https://developers.google.com/analytics/devguides/reporting/core/dimsmets}{Core Reporting API - Dimensions & Metrics Reference}
 #'
-#' @importFrom httr GET content
+#' @importFrom httr GET accept_json content
 #' @importFrom jsonlite fromJSON
 #'
 #' @include url.R
@@ -56,7 +56,7 @@
 #'
 list_metadata <- function(report.type = "ga") {
     url <- paste(base_api_url, base_api_version, "metadata", report.type, "columns", sep = "/")
-    resp <- GET(url)
+    resp <- GET(url, accept_json())
     data_json <- fromJSON(content(resp, as = "text"), flatten = TRUE)
     if (!is.null(data_json$error))
         error_message(data_json)
@@ -79,7 +79,7 @@ list_metadata <- function(report.type = "ga") {
 #' This dataset represents all of the dimensions and metrics for the reporting API with their attributes. Attributes returned include UI name, description, segments support, etc.
 #'
 #' @format
-#' A data frame with 434 rows and 14 variables containing the following columns:
+#' A data frame with 435 rows and 14 variables containing the following columns:
 #' \describe{
 #' \item{id}{Parameter name.}
 #' \item{type}{The type of column: \code{DIMENSION}, \code{METRIC}.}

@@ -54,8 +54,6 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </div>
 
 
-<div id="obtain-an-access-token" class="section level2">
-<h2>Obtain an access token</h2>
 <p>Before you send any requests to the Google Analytics API, it’s necessary to perform authorization and to obtain access token. It can be done with the following command:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">authorize</span>()</code></pre>
 <p>After calling this function first time, a web browser will be opened. First entrance with a <strong>Google Account</strong> confirms access to the Google Analytics data. Note that the package requests access for the <strong>read-only</strong> data.</p>
@@ -65,8 +63,8 @@ ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class
 <p>Access token can also be stored in a variable and passed as the argument to the functions which request the API Google Analytics. It can be useful when you are working with several accounts at the same time (for details see below).</p>
 <pre class="sourceCode r"><code class="sourceCode r">ga_token &lt;-<span class="st"> </span><span class="kw">authorize</span>(<span class="dt">client.id =</span> <span class="st">&quot;client_id&quot;</span>, <span class="dt">client.secret =</span> <span class="st">&quot;client_secret&quot;</span>)
 ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class="dt">profile.id =</span> <span class="st">&quot;ga:XXXXXXXX&quot;</span>, <span class="dt">token =</span> ga_token)</code></pre>
-<div id="obtain-oauth-2.0-credentials" class="section level3">
-<h3>Obtain OAuth 2.0 credentials</h3>
+<div id="obtain-oauth-2.0-credentials" class="section level2">
+<h2>Obtain OAuth 2.0 credentials</h2>
 <p><code>RGA</code> package provides predefined <strong>Client ID</strong> and <strong>Client secret</strong>, but you may need to create a new application in <a href="https://console.developers.google.com/">Google Developers Console</a> and obtain a <strong>Client ID</strong> and <strong>Client secret</strong> to access to the Google Analytics API.</p>
 <p>Step by step instructions are as follows:</p>
 <ol style="list-style-type: decimal">
@@ -99,8 +97,8 @@ ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class
 </ol>
 <p>You can return to the <a href="https://console.developers.google.com/project">Google Developers Console</a> at any time to view the <strong>Client ID</strong> and <strong>Client secret</strong> on the Client ID for native application section on Credentials page.</p>
 </div>
-<div id="use-environment-variables" class="section level3">
-<h3>Use environment variables</h3>
+<div id="use-environment-variables" class="section level2">
+<h2>Use environment variables</h2>
 <p>Besides the explicit specifying of the <code>client.id</code> and <code>client.secret</code> arguments, their values can be defined via environment variables: <code>RGA_CLIENT_ID</code> and <code>RGA_CLIENT_SECRET</code>. In this case, specifying of the <code>client.id</code> and <code>client.secret</code> arguments is not required for calling <code>authorize()</code> function:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">authorize</span>()</code></pre>
 <p>Note: do not put the <strong>Client secret</strong> on a publicly visible location.</p>
@@ -111,16 +109,16 @@ ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.setenv</span>(<span class="dt">RGA_CLIENT_ID =</span> <span class="st">&quot;client_id&quot;</span>, <span class="dt">RGA_CLIENT_SECRET =</span> <span class="st">&quot;client_secret&quot;</span>)</code></pre>
 <p>This string can be added to the file <code>.Rprofile</code> in the user’s current оr home directory in order to set these variables automatically when the R session starts.</p>
 </div>
-<div id="cache-an-access-token-to-disk" class="section level3">
-<h3>Cache an access token to disk</h3>
+<div id="cache-an-access-token-to-disk" class="section level2">
+<h2>Cache an access token to disk</h2>
 <p>When the <code>cache</code> argument and the <code>rga.cache</code> option is not changed, then after successful authorization the <code>.ga-token.rds</code> file with access token to Google API will be created in the current working directory. The <code>.ga-token.rds</code> file is used between sessions, i.e. at a subsequent call to the <code>authorize()</code> function and authorization in the browser tab is not required. Using the <code>cache</code> argument you can also suppress caching (<code>FALSE</code> value) or specify an alternate path to the file storage (in this case It is necessary to specify the path and file name explicitly).</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">authorize</span>(client.id, client.secret, <span class="dt">cache =</span> <span class="st">&quot;/path/to/file&quot;</span>)</code></pre>
 <p>Also you can specify a cache path to change <code>rga.cache</code> option. After this you no need specify <code>cache</code> argument for calling <code>authorize()</code> function:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">rga.cache =</span> <span class="st">&quot;/path/to/file&quot;</span>)
 <span class="kw">authorize</span>(client.id, client.secret)</code></pre>
 </div>
-<div id="working-with-multiple-tokens" class="section level3">
-<h3>Working with multiple tokens</h3>
+<div id="working-with-multiple-tokens" class="section level2">
+<h2>Working with multiple tokens</h2>
 <p>If you want to work with <code>RGA</code> package with multiple Client IDs and Client secrets from different accounts (for example from business account at work and personal account at home) you need to clearly distinguish them. The best way in this case is creating two different tokens with disabled <code>cache</code> option:</p>
 <pre class="sourceCode r"><code class="sourceCode r">work_token &lt;-<span class="st"> </span><span class="kw">authorize</span>(client.id1, client.secret1, <span class="dt">cache =</span> <span class="ot">FALSE</span>)
 home_token &lt;-<span class="st"> </span><span class="kw">authorize</span>(client.id2, client.secret2, <span class="dt">cache =</span> <span class="ot">FALSE</span>)</code></pre>
@@ -131,16 +129,14 @@ home_token &lt;-<span class="st"> </span><span class="kw">authorize</span>(clien
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">list_profiles</span>(<span class="dt">token =</span> work_token)
 <span class="kw">list_profiles</span>(<span class="dt">token =</span> home_token)</code></pre>
 </div>
-</div>
 <div id="references" class="section level2">
 <h2>References</h2>
 <ul>
 <li><a href="https://developers.google.com/accounts/docs/OpenIDConnect">OpenID Connect (OAuth 2.0 for Login)</a>;</li>
 <li><a href="https://developers.google.com/accounts/docs/OAuth2">Using OAuth 2.0 to Access Google APIs</a>;</li>
 <li><a href="https://console.developers.google.com/project">Google Developers Console</a>;</li>
-<li><a href="http://support.microsoft.com/kb/310519">Setting environment variables in Windows XP</a></li>
-<li><a href="https://developer.apple.com/library/mac/#documentation/MacOSX/Conceptual/BPRuntimeConfig/Articles/EnvironmentVars.html">Setting environment variables in earlier versions of OSX</a></li>
-<li><a href="https://help.ubuntu.com/community/EnvironmentVariables">Setting environment variables in Ubuntu Linux</a></li>
+<li><a href="https://en.wikipedia.org/w/index.php?title=Environment_variables">Environment variables</a></li>
+<li><a href="http://environmentvariables.org/Getting_and_setting_environment_variables">Getting and setting environment variables</a></li>
 </ul>
 </div>
 
