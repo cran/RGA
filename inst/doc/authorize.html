@@ -63,6 +63,7 @@ ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class
 <p>Access token can also be stored in a variable and passed as the argument to the functions which request the API Google Analytics. It can be useful when you are working with several accounts at the same time (for details see below).</p>
 <pre class="sourceCode r"><code class="sourceCode r">ga_token &lt;-<span class="st"> </span><span class="kw">authorize</span>(<span class="dt">client.id =</span> <span class="st">&quot;client_id&quot;</span>, <span class="dt">client.secret =</span> <span class="st">&quot;client_secret&quot;</span>)
 ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class="dt">profile.id =</span> <span class="st">&quot;ga:XXXXXXXX&quot;</span>, <span class="dt">token =</span> ga_token)</code></pre>
+<p>To authorize of the new Google Analytics account use <code>new.auth</code> argument when <code>authorize()</code> function call.</p>
 <div id="obtain-oauth-2.0-credentials" class="section level2">
 <h2>Obtain OAuth 2.0 credentials</h2>
 <p><code>RGA</code> package provides predefined <strong>Client ID</strong> and <strong>Client secret</strong>, but you may need to create a new application in <a href="https://console.developers.google.com/">Google Developers Console</a> and obtain a <strong>Client ID</strong> and <strong>Client secret</strong> to access to the Google Analytics API.</p>
@@ -77,9 +78,10 @@ ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class
 </ul></li>
 <li>Enabling access to the Google Analytics API:
 <ul>
-<li>Select your project from the project list on <a href="https://console.developers.google.com/project" class="uri">https://console.developers.google.com/project</a> page;</li>
-<li>Select <strong>APIs &amp; auth</strong> in the left sidebar;</li>
-<li>Click <strong>OFF</strong> for activation <strong>Analytics API</strong> (ensure that <code>OFF</code> turned to <code>ON</code>) in the <strong>APIs</strong> tab.</li>
+<li>Select your project from the project list on <https: console.developers.google.com project page>;</li>
+<li>Select <strong>APIs &amp; auth</strong> and then <strong>APIs</strong> sub-menu in the left sidebar;</li>
+<li>Click on the <strong>Analytics API</strong> link in the <strong>Advertising APIs</strong> section;</li>
+<li>Click <strong>Enable API</strong> for activation <strong>Analytics API</strong>.</li>
 </ul></li>
 <li>Creating a new application:
 <ul>
@@ -102,10 +104,10 @@ ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class
 <p>Besides the explicit specifying of the <code>client.id</code> and <code>client.secret</code> arguments, their values can be defined via environment variables: <code>RGA_CLIENT_ID</code> and <code>RGA_CLIENT_SECRET</code>. In this case, specifying of the <code>client.id</code> and <code>client.secret</code> arguments is not required for calling <code>authorize()</code> function:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">authorize</span>()</code></pre>
 <p>Note: do not put the <strong>Client secret</strong> on a publicly visible location.</p>
-<p>Setting the environment variables is different for various operating systems. The user should refer to the relevant reference materials (view the list of references at the end of this manual). Also there is a setup method of the environment variables when running R sessions using the <code>.Renviron</code> files in the user’s working or home directory. Contents of the file might look like this:</p>
+<p>Setting the environment variables is different for various operating systems. The user should refer to the relevant reference materials (view the list of references at the end of this manual). Also there is a setup method of the environment variables when running R sessions using the <code>.Renviron</code> files in the working or user’s home directory. Contents of the file might look like this:</p>
 <pre class="sourceCode bash"><code class="sourceCode bash"><span class="ot">RGA_CLIENT_ID=</span><span class="st">&quot;client_id&quot;</span>
 <span class="ot">RGA_CLIENT_SECRET=</span><span class="st">&quot;client_secret&quot;</span></code></pre>
-<p>Environment variables can also be set directly from R session using the <code>Sys.setenv</code> function. For instance:</p>
+<p>Environment variables can also be set directly from R session using the <code>Sys.setenv()</code> function. For instance:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.setenv</span>(<span class="dt">RGA_CLIENT_ID =</span> <span class="st">&quot;client_id&quot;</span>, <span class="dt">RGA_CLIENT_SECRET =</span> <span class="st">&quot;client_secret&quot;</span>)</code></pre>
 <p>This string can be added to the file <code>.Rprofile</code> in the user’s current оr home directory in order to set these variables automatically when the R session starts.</p>
 </div>
@@ -116,6 +118,7 @@ ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class
 <p>Also you can specify a cache path to change <code>rga.cache</code> option. After this you no need specify <code>cache</code> argument for calling <code>authorize()</code> function:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">rga.cache =</span> <span class="st">&quot;/path/to/file&quot;</span>)
 <span class="kw">authorize</span>(client.id, client.secret)</code></pre>
+<p>To disable caching set the <code>rga.cache</code> option or <code>cache</code> argument to <code>FALSE</code>.</p>
 </div>
 <div id="working-with-multiple-tokens" class="section level2">
 <h2>Working with multiple tokens</h2>
@@ -128,6 +131,15 @@ home_token &lt;-<span class="st"> </span><span class="kw">authorize</span>(clien
 <p>Then pass this token to other functions:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">list_profiles</span>(<span class="dt">token =</span> work_token)
 <span class="kw">list_profiles</span>(<span class="dt">token =</span> home_token)</code></pre>
+</div>
+<div id="revoke-access-application" class="section level2">
+<h2>Revoke access application</h2>
+<p>To revoke access the  package do the following:</p>
+<ol style="list-style-type: decimal">
+<li>Go to the <a href="https://security.google.com/settings/security/permissions">Apps connected to your account</a> page;</li>
+<li>Find <strong>RGA package</strong> entry. Then click on it;</li>
+<li>Click on the <strong>Revoke access</strong> button in the sidebar on the right.</li>
+</ol>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>

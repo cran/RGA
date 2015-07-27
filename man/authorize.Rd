@@ -4,27 +4,31 @@
 \alias{authorize}
 \title{Authorize the RGA package to the user's Google Analytics account using OAuth2.0}
 \usage{
-authorize(client.id, client.secret, cache = getOption("rga.cache"))
+authorize(client.id = getOption("rga.client.id"),
+  client.secret = getOption("rga.client.secret"),
+  cache = getOption("rga.cache"), new.auth = FALSE)
 }
 \arguments{
-\item{client.id}{character. OAuth client ID. if client.id is missing, we'll look in the environment variable \code{RGA_CLIENT_ID}.}
+\item{client.id}{character. OAuth client ID. If you set the environment variable \env{RGA_CLIENT_ID} it is used.}
 
-\item{client.secret}{character. OAuth client secret. if client.secret is missing, we'll look in the environment variable \code{RGA_CLIENT_SECRET}.}
+\item{client.secret}{character. OAuth client secret. If you set the environment variable \env{RGA_CLIENT_SECRET} it is used.}
 
 \item{cache}{logical or character. \code{TRUE} means to cache using the default cache file \code{.oauth-httr}, \code{FALSE} means not to cache. A string means to use the specified path as the cache file.}
+
+\item{new.auth}{logical. Set \code{TRUE} to reauthorization with the same or different Google Analytics account.}
 }
 \value{
 A \code{\link[httr]{Token2.0}} object containing all the data required for OAuth access.
 }
 \description{
-\code{authorize} function uses \code{\link[httr]{oauth2.0_token}} to obtain the OAuth tokens. Expired tokens will be refreshed automamaticly. If client.id and client.secret are missing the package provides predefined values.
+\code{authorize()} function uses \code{\link[httr]{oauth2.0_token}} to obtain the OAuth tokens. Expired tokens will be refreshed automamaticly. If you have no \code{client.id} and \code{client.secret} the package provides predefined values.
 }
 \details{
 After calling this function first time, a web browser will be opened. First, log in with a Google Account, confirm the authorization to access the Google Analytics data. Note that the package requests access for read-only data.
 
-When the \code{authorize} function is used the \code{GAToken} variable is created in the separate \code{TokenEnv} environment which is not visible for user. So, there is no need to pass the token argument to any function which requires authorisation every time. Also there is a possibility to store token in separate variable and to pass it to the functions. It can be useful when you are working with several accounts at the same time.
+When the \code{authorize()} function is used the \code{GAToken} variable is created in the separate \code{TokenEnv} environment which is not visible for user. So, there is no need to pass the token argument to any function which requires authorization every time. Also there is a possibility to store token in separate variable and to pass it to the functions. It can be useful when you are working with several accounts at the same time.
 }
-\section{Use custom client.id and client.secret}{
+\section{Use custom Client ID and Client secret}{
 
 
 For some reasons you may need to use a custom client ID and client secret. In order to obtain these, you will have to register an application with the Google Analytics API. To find your project's client ID and client secret, do the following:
@@ -32,20 +36,41 @@ For some reasons you may need to use a custom client ID and client secret. In or
 \enumerate{
   \item Go to the \href{https://console.developers.google.com/}{Google Developers Console}.
   \item Select a project (create if needed).
-  \item Select \emph{APIs & auth} in the sidebar on the left. Then in the list of APIs make sure that the status is \emph{ON} for the Analytics API.
+  \item Select \emph{APIs & auth} in the sidebar on the left.
+  \item In the list of APIs select \emph{Analytics API}. Then click \emph{Enable API}.
   \item Select \emph{Credentials} in the sidebar on the left.
   \item To set up a service account select \emph{Create New Client ID}. Select \emph{Installed Application} and \emph{Others} options and then select \emph{Create Client ID}.
 }
 
 You can return to the \href{https://console.developers.google.com/}{Google Developers Console} at any time to view the client ID and client secret on the \emph{Client ID for native application} section on \emph{Credentials} page.
+
+There 3 ways to use custom Client ID and Client secret:
+
+\enumerate{
+  \item Pass the \code{client.id} and \code{client.secret} arguments directly in the \code{authorize()} function call
+  \item Set the \env{RGA_CLIENT_ID} and \env{RGA_CLIENT_SECRET} environment variables
+  \item Set the \code{rga.client.id} and \code{rga.client.secret} options
+}
+}
+
+\section{Revoke access application}{
+
+
+To revoke access the \pkg{RGA} package do the following:
+
+\enumerate{
+  \item Go to the \href{https://security.google.com/settings/security/permissions}{Apps connected to your account} page
+  \item Find \emph{RGA package} entry. Then click on it
+  \item Click on the \emph{Revoke access} button in the sidebar on the right
+}
 }
 \examples{
 \dontrun{
-authorize(client.id = "myID", client.secret = "mySecret")
+authorize(client.id = "my_id", client.secret = "my_secret")
 # if set RGA_CLIENT_ID and RGA_CLIENT_SECRET environment variables
 authorize()
 # assign token to variable
-ga_token <- authorize(client.id = "myID", client.secret = "mySecret")
+ga_token <- authorize(client.id = "my_id", client.secret = "my_secret")
 }
 }
 \references{

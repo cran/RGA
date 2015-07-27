@@ -9,7 +9,6 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="date" content="2015-06-14" />
 
 <title>Obtain the access to the Management API</title>
 
@@ -52,39 +51,50 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 <div id="header">
 <h1 class="title">Obtain the access to the Management API</h1>
-<h4 class="date"><em>2015-06-14</em></h4>
 </div>
 
 
 <p>To access summary information of the Management API Google Analytics <code>RGA</code> package provides the following functions:</p>
 <ul>
-<li><code>list_accounts</code> - Lists all accounts which the user has access to;</li>
-<li><code>list_webproperties</code> - Lists web properties which the user has access to;</li>
-<li><code>list_profiles</code> - Lists views (profiles) which the user has access to;</li>
-<li><code>list_custom_sources</code> - List custom data sources which the user has access to;</li>
-<li><code>list_filters</code> - Lists all filters for an account which the user has access to;</li>
-<li><code>list_goals</code> - Lists goals which the user has access to;</li>
-<li><code>list_segments</code> - Lists segments which the user has access to;</li>
-<li><code>list_unsampled_reports</code> - Lists unsampled reports which the user has access to;</li>
+<li><code>list_accounts()</code> - Lists all accounts which the user has access to;</li>
+<li><code>list_webproperties()</code> - Lists web properties which the user has access to;</li>
+<li><code>list_profiles()</code> - Lists views (profiles) which the user has access to;</li>
+<li><code>list_custom_dimensions()</code> - Lists custom dimensions to which the user has access to;</li>
+<li><code>list_custom_metrics()</code> - Lists custom metrics to which the user has access to;</li>
+<li><code>list_custom_sources()</code> - List custom data sources which the user has access to;</li>
+<li><code>list_experiments()</code> - Lists experiments to which the user has access to;</li>
+<li><code>list_filters()</code> - Lists all filters for an account which the user has access to;</li>
+<li><code>list_goals()</code> - Lists goals which the user has access to;</li>
+<li><code>list_segments()</code> - Lists segments which the user has access to;</li>
+<li><code>list_unsampled_reports()</code> - Lists unsampled reports which the user has access to;</li>
 </ul>
 <p>Each of these functions return a table of data (<code>data.frame</code>) with the relevant content.</p>
-<p>The functions such as <code>list_webproperties</code>, <code>list_profiles</code> and <code>list_goals</code> can be specified with the additional arguments such as <code>account.id</code>, <code>webproperty.id</code> or <code>profile.id</code> which are required to obtain the information for specific account, resource or profile (view the help pages for the corresponding functions). This is an example of obtaining the information on all views (profiles):</p>
+<p>The functions such as <code>list_webproperties()</code>, <code>list_profiles()</code> and <code>list_goals()</code> can be specified with the additional arguments such as <code>account.id</code>, <code>webproperty.id</code> or <code>profile.id</code> which are required to obtain the information for specific account, resource or profile (view the help pages for the corresponding functions). This is an example of obtaining the information on all views (profiles):</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">list_profiles</span>()</code></pre>
 <p>To get all profiles for a specific account try this:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">list_profiles</span>(<span class="dt">account.id =</span> <span class="st">&quot;XXXXXXXX&quot;</span>)</code></pre>
 <p>To get a more detail information about interesing entry use following functions:</p>
 <ul>
-<li><code>get_filter</code> - Gets a filter to which the user has access to;</li>
-<li><code>get_goal</code> - Gets a goal to which the user has access to;</li>
-<li><code>get_profile</code> - Gets a view (profile) to which the user has access to;</li>
-<li><code>get_unsampled_report</code> - Gets a single unsampled report to which the user has access to;</li>
-<li><code>get_webproperty</code> - Gets a web property to which the user has access to;</li>
+<li><code>get_custom_dimension()</code> - Gets a custom dimension to which the user has access to;</li>
+<li><code>get_custom_metric()</code> - Gets a custom metric to which the user has access to;</li>
+<li><code>get_experiment()</code> - Gets a experiment to which the user has access to;</li>
+<li><code>get_filter()</code> - Gets a filter to which the user has access to;</li>
+<li><code>get_goal()</code> - Gets a goal to which the user has access to;</li>
+<li><code>get_profile()</code> - Gets a view (profile) to which the user has access to;</li>
+<li><code>get_webproperty()</code> - Gets a web property to which the user has access to;</li>
+<li><code>get_unsampled_report()</code> - Gets a single unsampled report to which the user has access to;</li>
 </ul>
 <p>Each of these functions return a set of data (<code>list</code>) with the relevant content.</p>
 <p>To get information about specific filter in first you need obtain the filter ID with <code>list_filters()</code> function. Then use obtained filter ID to get more details about this filter:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">list_accounts</span>()
 <span class="kw">list_filters</span>(<span class="dt">account.id =</span> <span class="st">&quot;XXXXXXXX&quot;</span>)
 <span class="kw">get_filter</span>(<span class="dt">account.id =</span> <span class="st">&quot;XXXXXXXX&quot;</span>, <span class="dt">filter.id =</span> <span class="st">&quot;YYYYYYYY&quot;</span>)</code></pre>
+<div id="references" class="section level2">
+<h2>References</h2>
+<ul>
+<li><a href="https://developers.google.com/analytics/devguides/config/mgmt/v3/">What Is The Management API - Overview</a></li>
+</ul>
+</div>
 
 
 

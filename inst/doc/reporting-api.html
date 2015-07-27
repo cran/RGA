@@ -9,7 +9,6 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="date" content="2015-06-14" />
 
 <title>Obtain an access to the Reporting API</title>
 
@@ -52,20 +51,19 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 <div id="header">
 <h1 class="title">Obtain an access to the Reporting API</h1>
-<h4 class="date"><em>2015-06-14</em></h4>
 </div>
 
 
 <p>To access the Reporting API Google Analytics <code>RGA</code> package provides the following functions:</p>
 <ul>
-<li><code>get_ga</code> - returns Analytics data for a view (profile);</li>
-<li><code>get_mcf</code> - returns Analytics Multi-Channel Funnels data for a view (profile);</li>
-<li><code>get_rt</code> - returns real time data for a view (profile).</li>
+<li><code>get_ga()</code> - returns Analytics data for a view (profile);</li>
+<li><code>get_mcf()</code> - returns Analytics Multi-Channel Funnels data for a view (profile);</li>
+<li><code>get_rt()</code> - returns real time data for a view (profile).</li>
 </ul>
 <p>All of this functions return a data frame including the data for a view (profile).</p>
 <p>The following parameters are available for queries to the API reports:</p>
 <ul>
-<li><code>profile.id</code> - profile (view) ID. Can be obtained using the <code>list_profiles</code> or via the web interface Google Analytics;</li>
+<li><code>profile.id</code> - profile (view) ID. Can be obtained using the <code>list_profiles()</code> or via the web interface Google Analytics;</li>
 <li><code>start.date</code> - the start date for collecting data formatted as YYYY-MM-DD. Also values such as “today”, “yesterday”, “ndaysAgo” are allowed, where n is the number of days;</li>
 <li><code>end.date</code> - the end date for collecting data formatted as YYYY-MM-DD. Also values such as “today”, “yesterday”, “ndaysAgo” are allowed, where n is the number of days;</li>
 <li><code>metrics</code> - comma-separated list of values ​​of metrics (metrics), for example, <code>&quot;ga:sessions,ga:bounces&quot;</code>. The number of metrics cannot exceed 10 indicators for a single request;</li>
@@ -77,15 +75,14 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><code>start.index</code> - index of the first returned result (line number);</li>
 <li><code>max.results</code> - maximum number of fields (rows) of the returned results;</li>
 <li><code>token</code> - object of class <code>Token2.0</code> which contains data with a valid authorization data. Can be obtained using the <code>authorize</code> function;</li>
-<li><code>messages</code> - logical argument which includes displaying of additional messages during the data request.</li>
 </ul>
 <p>The following arguments: <code>profile.id</code>, <code>start.date</code>, <code>end.date</code> and <code>metrics</code> are required for <code>get_ga</code> and <code>get_mcf</code> (<code>get_rt</code> requires only <code>profile.id</code> and <code>metrics</code>). Notice that all arguments must be character strings of unit length. The exception is <code>profile.id</code> which can be both character string and numeric.</p>
 <p>This is an example of data obtaining for the last 30 days:</p>
 <pre class="sourceCode r"><code class="sourceCode r">ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class="dt">profile.id =</span> XXXXXXXX, <span class="dt">start.date =</span> <span class="st">&quot;30daysAgo&quot;</span>, <span class="dt">end.date =</span> <span class="st">&quot;yesterday&quot;</span>,
                   <span class="dt">metrics =</span> <span class="st">&quot;ga:users,ga:sessions,ga:pageviews&quot;</span>)</code></pre>
 <p>Sometimes it is necessary to obtain the data for the entire monitoring period through service Google Analytics. For these purposes the package <code>RGA</code> provides the function <code>get_firstdate</code> which takes a charming profile ID (submission) as an argument:</p>
-<pre class="sourceCode r"><code class="sourceCode r">first_date &lt;-<span class="st"> </span><span class="kw">get_firstdate</span>(<span class="dt">profile.id =</span> XXXXXXXX)</code></pre>
-<p>Now we can use the variable <code>first_date</code> as the argument <code>start.date</code> when we call the <code>get_ga</code> function:</p>
+<pre class="sourceCode r"><code class="sourceCode r">first_date &lt;-<span class="st"> </span><span class="kw">firstdate</span>(<span class="dt">profile.id =</span> XXXXXXXX)</code></pre>
+<p>Now we can use the variable <code>first_date</code> as the argument <code>start.date</code> when we call the <code>get_ga()</code> function:</p>
 <pre class="sourceCode r"><code class="sourceCode r">ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class="dt">profile.id =</span> XXXXXXXX, <span class="dt">start.date =</span> first_date, <span class="dt">end.date =</span> <span class="st">&quot;yesterday&quot;</span>,
                   <span class="dt">metrics =</span> <span class="st">&quot;ga:users,ga:sessions,ga:pageviews&quot;</span>)</code></pre>
 <div id="sampled-data" class="section level2">

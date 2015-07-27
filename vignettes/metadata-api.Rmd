@@ -1,7 +1,7 @@
 ---
 title: "Obtain access to the Metadata API"
 #author: "Artem Klevtsov"
-date: "`r Sys.Date()`"
+#date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Metadata API}
@@ -10,7 +10,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, echo = FALSE, message = FALSE}
+```{r opts, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(
     comment = "#>",
     collapse = TRUE,
@@ -42,6 +42,8 @@ There are several examples of usage the metadata Google Analytics API.
 
 ## Examples
 
+To obtain the relevant information metadata:
+
 ```r
 ga_meta <- list_metadata()
 ```
@@ -70,12 +72,19 @@ List of all parameters allowed in segments:
 subset(ga_meta, allowed.in.segments, id)
 ```
 
+List of all templatized parameters:
+
+```r
+subset(ga_meta, !is.na(min.template.index) & !is.na(max.template.index), id)
+```
+
 `RGA` package also provide the shiny demo app to access `ga` dataset:
 
 ```r
-dimsmets(ga_meta)
+dimsmets("ga")
 ```
 
 ## References
 
 - [Dimensions & Metrics Reference](https://developers.google.com/analytics/devguides/reporting/core/dimsmets)
+- [Metadata API - Developer Guide](https://developers.google.com/analytics/devguides/reporting/metadata/v3/devguide)

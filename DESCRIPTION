@@ -11,8 +11,8 @@ Description: Provides functions for accessing and retrieving data from the
     shiny app to explore the core reporting API dimensions and metrics.
 URL: https://bitbucket.org/unikum/rga
 BugReports: https://bitbucket.org/unikum/rga/issues
-Version: 0.2.2
-Date: 2015-06-13
+Version: 0.2.3
+Date: 2015-07-26
 Authors@R: c(
     person(given = "Artem", family = "Klevtsov",
     email = "a.a.klevtsov@gmail.com", role = c("aut", "cre")),
@@ -22,21 +22,22 @@ Authors@R: c(
     email = "ol1709@yahoo.com", role = "ctb"))
 License: GPL (>= 2)
 Depends: R (>= 3.0.0)
-Imports: httr (>= 0.6), httpuv, curl, jsonlite, shiny (>= 0.11)
+Imports: utils, stats, httr (>= 0.6), httpuv, curl, jsonlite, shiny (>=
+        0.11)
 Collate: 'utils.R' 'url.R' 'auth.R' 'request.R' 'get-data.R'
         'convert.R' 'mgmt.R' 'accounts.R' 'custom-dims.R'
         'custom-mets.R' 'custom-sources.R' 'experiments.R' 'filters.R'
-        'query.R' 'profiles.R' 'report.R' 'ga.R' 'first-date.R'
+        'query.R' 'profiles.R' 'report.R' 'ga.R' 'firstdate.R'
         'goals.R' 'mcf.R' 'metadata.R' 'package.R' 'rt.R' 'segments.R'
         'shiny.R' 'unsampled.R' 'webproperties.R' 'zzz.R'
 Suggests: knitr, testthat
 VignetteBuilder: knitr
 LazyData: true
-Packaged: 2015-06-14 03:33:14 UTC; xxx
+NeedsCompilation: no
+Packaged: 2015-07-26 21:11:37 UTC; xxx
 Author: Artem Klevtsov [aut, cre],
   Philipp Upravitelev [ctb],
   Olga Shramko [ctb]
 Maintainer: Artem Klevtsov <a.a.klevtsov@gmail.com>
-NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2015-06-14 08:32:49
+Date/Publication: 2015-07-27 11:31:35

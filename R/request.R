@@ -1,6 +1,7 @@
 # Error printing function
 #' @include utils.R
 #' @importFrom httr http_status
+#' @importFrom utils capture.output
 error_message <- function(x) {
     code <- x$error$code
     message <- http_status(code)$message
@@ -37,12 +38,16 @@ get_response <- function(type = c("ga", "rt", "mcf", "mgmt"), path = NULL, query
     url <- get_url(type = type, path = path, query = query)
     if (missing(token) && token_exists(getOption("rga.token")))
         token <- get_token(getOption("rga.token"))
-    if (!missing(token) || (missing(token) && token_exists(getOption("rga.token")))) {
+    if (!missing(token)) {
         stopifnot(inherits(token, "Token2.0"))
         config <- config(token = token)
     } else
         config <- NULL
     resp <- GET(url, accept_json(), config)
+    if (resp$status_code == 401L) {
+        authorize(cache = FALSE)
+        return(eval(match.call()))
+    }
     data_json <- fromJSON(content(resp, as = "text"), simplifyVector = simplify, flatten = flatten)
     if (!is.null(data_json$error))
         error_message(data_json)
