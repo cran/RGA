@@ -54,8 +54,8 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </div>
 
 
-<p>When working with the API reports it is sometimes necessary to obtain background information about these or other query parameters to the API. To obtain a list of all the metrics and dimensions <code>RGA</code> package provides the <code>list_metadata()</code> function, which return actual informtation about all dimensions and metrics for the given report type (now support only the Core Reporting API metadata).</p>
-<p><code>list_metadata()</code> return an <code>data.frame</code>, which consists of the following columns:</p>
+<p>When working with the API reports it is sometimes necessary to obtain background information about these or other query parameters to the API. To obtain a list of all the metrics and dimensions <code>RGA</code> package provides the <code>list_dimsmets()</code> function, which return actual informtation about all dimensions and metrics for the given report type (now support only the Core Reporting API metadata).</p>
+<p><code>list_dimsmets()</code> return an <code>data.frame</code>, which consists of the following columns:</p>
 <ul>
 <li><code>id</code> - the parameter code name (metric or dimension) (used for queries);</li>
 <li><code>type</code> - parameter type: metric (METRIC) or dimension (DIMENSION);</li>
@@ -76,7 +76,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="examples" class="section level2">
 <h2>Examples</h2>
 <p>To obtain the relevant information metadata:</p>
-<pre class="sourceCode r"><code class="sourceCode r">ga_meta &lt;-<span class="st"> </span><span class="kw">list_metadata</span>()</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">ga_meta &lt;-<span class="st"> </span><span class="kw">list_dimsmets</span>()</code></pre>
 <p>List of all outdated parameters and those ones which were replaced:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">subset</span>(ga_meta, status ==<span class="st"> &quot;DEPRECATED&quot;</span>, <span class="kw">c</span>(id, replaced.by))</code></pre>
 <p>List of all parameters from certain group:</p>
@@ -87,8 +87,6 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">subset</span>(ga_meta, allowed.in.segments, id)</code></pre>
 <p>List of all templatized parameters:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">subset</span>(ga_meta, !<span class="kw">is.na</span>(min.template.index) &amp;<span class="st"> </span>!<span class="kw">is.na</span>(max.template.index), id)</code></pre>
-<p><code>RGA</code> package also provide the shiny demo app to access <code>ga</code> dataset:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dimsmets</span>(<span class="st">&quot;ga&quot;</span>)</code></pre>
 </div>
 <div id="references" class="section level2">
 <h2>References</h2>

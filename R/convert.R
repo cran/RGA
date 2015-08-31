@@ -9,7 +9,7 @@ df_ga <- function(x) {
 }
 
 # Build data.frame for realtime report
-df_rt <- function(x) {
+df_realtime <- function(x) {
     names <- gsub("^rt:", "", x$columnHeaders$name)
     data_df <- as.data.frame(x$rows, stringsAsFactors = FALSE)
     colnames(data_df) <- names
@@ -44,9 +44,7 @@ df_mcf <- function(x) {
 #' @include utils.R
 #' @importFrom stats setNames
 ls_mgmt <- function(x) {
-    names(x) <- gsub("webPropertyId", "webpropertyId", names(x), fixed = TRUE)
-    names(x) <- gsub("WebPropertyId", "WebpropertyId", names(x), fixed = TRUE)
-    x <- x[!names(x) %in% c("selfLink", "parentLink")]
+    x <- x[!names(x) %in% c("selfLink", "parentLink", "childLink")]
     names(x) <-  to_separated(names(x), sep = ".")
     to_rename <- vapply(x, is.list, logical(1))
     x[to_rename] <- lapply(x[to_rename], function(x) setNames(x, to_separated(names(x), sep = ".")))
@@ -63,17 +61,17 @@ df_mgmt <- function(x) {
         data_df$permissions.effective <- vapply(data_df$permissions.effective, paste, collapse = ",", FUN.VALUE = character(1))
         names(data_df) <- gsub(".effective", "", names(data_df), fixed = TRUE)
     }
-    names(data_df) <- gsub("webPropertyId", "webpropertyId", names(data_df), fixed = TRUE)
+    names(data_df) <- gsub("PropertyId", "propertyId", names(data_df), fixed = TRUE)
     return(data_df)
 }
 
 # Build a data.frame for GA report data
 #' @include utils.R
-build_df <- function(type = c("ga", "mcf", "rt", "mgmt"), data) {
+build_df <- function(type = c("ga", "mcf", "realtime", "mgmt"), data) {
     type <- match.arg(type)
     data_df <- switch(type,
                       ga = df_ga(data),
-                      rt = df_rt(data),
+                      rt = df_realtime(data),
                       mcf = df_mcf(data),
                       mgmt = df_mgmt(data))
     rownames(data_df) <- NULL

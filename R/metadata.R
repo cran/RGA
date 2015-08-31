@@ -1,9 +1,9 @@
-#' @title Lists all columns for a report type
+#' @title Lists all the dimensions and metrics for a particular report type
 #'
 #' @description
 #' This dataset represents all of the dimensions and metrics for the reporting API with their attributes. Attributes returned include UI name, description, segments support, etc.
 #'
-#' @param report.type character. Report type. Allowed Values: ga. Where ga corresponds to the Core Reporting API.
+#' @param report.type character. Report type. Allowed Values: \dQuote{ga}. Where \dQuote{ga} corresponds to the Core Reporting API.
 #'
 #' @return A data.frame contains dimensions and metrics for a particular report type.
 #' \item{id}{Parameter name.}
@@ -35,11 +35,13 @@
 #' @include request.R
 #' @include convert.R
 #'
+#' @aliases list_metadata
+#'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' ga_meta <- list_metadata("ga")
+#' ga_meta <- list_dimsmets("ga")
 #' # a count of parameters types
 #' table(ga_meta$type)
 #' # parameters groups
@@ -54,7 +56,7 @@
 #' subset(ga_meta, allowed.in.segments, id)
 #' }
 #'
-list_metadata <- function(report.type = "ga") {
+list_dimsmets <- function(report.type = "ga") {
     url <- paste(base_api_url, base_api_version, "metadata", report.type, "columns", sep = "/")
     resp <- GET(url, accept_json())
     data_json <- fromJSON(content(resp, as = "text"), flatten = TRUE)
@@ -70,6 +72,13 @@ list_metadata <- function(report.type = "ga") {
     return(data_df)
 }
 
+#' @export
+#'
+list_metadata <- function(report.type = "ga") {
+    .Deprecated("list_dimsmets")
+    return(list_dimsmets(report.type))
+}
+
 #' @title Lists all columns for a Google Analytics core report type
 #'
 #' @usage
@@ -79,7 +88,7 @@ list_metadata <- function(report.type = "ga") {
 #' This dataset represents all of the dimensions and metrics for the reporting API with their attributes. Attributes returned include UI name, description, segments support, etc.
 #'
 #' @format
-#' A data frame with 435 rows and 14 variables containing the following columns:
+#' A data frame with 436 rows and 14 variables containing the following columns:
 #' \describe{
 #' \item{id}{Parameter name.}
 #' \item{type}{The type of column: \code{DIMENSION}, \code{METRIC}.}
@@ -108,7 +117,7 @@ list_metadata <- function(report.type = "ga") {
 #' @docType data
 #' @name ga
 #'
-#' @seealso \code{\link{get_ga}} \code{\link{dimsmets}} \code{\link{list_metadata}}
+#' @seealso \code{\link{get_ga}} \code{\link{list_dimsmets}}
 #'
 #' @examples
 #' # a count of parameters types

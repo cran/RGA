@@ -13,7 +13,7 @@
 #' @param max.results integer. The maximum number of entries to include in this feed.
 #' @param token \code{\link[httr]{Token2.0}} class object with a valid authorization data.
 #'
-#' @return A data frame including the Analytics data for a view (profile).
+#' @return A data frame including the Analytics data for a view (profile). Addition information about profile and request query stored in the attributes.
 #'
 #' @references
 #' \href{https://developers.google.com/analytics/devguides/reporting/core/dimsmets}{Core Reporting API - Dimensions & Metrics Reference}
@@ -24,14 +24,14 @@
 #'
 #' \href{https://ga-dev-tools.appspot.com/explorer/}{Query Explorer}
 #'
-#' @seealso \code{\link{authorize}} \code{\link{list_metadata}}
+#' @seealso \code{\link{authorize}} \code{\link{list_dimsmets}}
 #'
 #' @family Reporting API
 #'
 #' @examples
 #' \dontrun{
 #' # get token data
-#' authorize(client.id = "client_id", client.secret = "client_secret")
+#' authorize()
 #' # get report data
 #' ga_data <- get_ga("profile_id", start.date = "30daysAgo", end.date = "today",
 #'                   metrics = "ga:sessions", dimensions = "ga:source,ga:medium",
@@ -46,10 +46,6 @@ get_ga <- function(profile.id, start.date = "7daysAgo", end.date = "yesterday",
                    metrics = "ga:users,ga:sessions,ga:pageviews", dimensions = NULL,
                    sort = NULL, filters = NULL, segment = NULL, sampling.level = NULL,
                    start.index = NULL, max.results = NULL, token) {
-    stopifnot(!is.null(profile.id), nzchar(profile.id),
-              !is.null(start.date), nzchar(start.date),
-              !is.null(end.date), nzchar(end.date),
-              !is.null(metrics), nzchar(metrics))
     if (!is.null(sampling.level))
         sampling.level <- match.arg(sampling.level, c("default", "faster", "higher_precision"))
     query <- build_query(profile.id = profile.id, start.date = start.date, end.date = end.date,

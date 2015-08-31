@@ -4,7 +4,7 @@
 \name{ga}
 \alias{ga}
 \title{Lists all columns for a Google Analytics core report type}
-\format{A data frame with 435 rows and 14 variables containing the following columns:
+\format{A data frame with 436 rows and 14 variables containing the following columns:
 \describe{
 \item{id}{Parameter name.}
 \item{type}{The type of column: \code{DIMENSION}, \code{METRIC}.}
@@ -50,7 +50,7 @@ subset(ga, allowed.in.segments, id)
 \href{https://developers.google.com/analytics/devguides/reporting/core/dimsmets}{Core Reporting API - Dimensions & Metrics Reference}
 }
 \seealso{
-\code{\link{get_ga}} \code{\link{dimsmets}} \code{\link{list_metadata}}
+\code{\link{get_ga}} \code{\link{list_dimsmets}}
 }
 \keyword{data}
 \keyword{datasets}

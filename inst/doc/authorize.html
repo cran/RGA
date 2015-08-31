@@ -56,7 +56,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 <p>Before you send any requests to the Google Analytics API, it’s necessary to perform authorization and to obtain access token. It can be done with the following command:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">authorize</span>()</code></pre>
-<p>After calling this function first time, a web browser will be opened. First entrance with a <strong>Google Account</strong> confirms access to the Google Analytics data. Note that the package requests access for the <strong>read-only</strong> data.</p>
+<p>After calling this function first time, a web browser will be opened. If <code>username</code> argument was not specified you need choose an account for the authorization. First entrance with a <strong>Google Account</strong> confirms access to the Google Analytics data. Note that the package requests access for the <strong>read-only</strong> data.</p>
 <p>When the <code>authorize()</code> function is used, the <code>GAToken</code> (can be changed with <code>rga.token</code> option) variable is created in the separate <code>TokenEnv</code> environment which not visible for user. So, there is no need to pass every time the <code>token</code> argument to any function which requires authorization.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">list_profiles</span>()
 ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class="dt">profile.id =</span> <span class="st">&quot;ga:XXXXXXXX&quot;</span>)</code></pre>
@@ -113,7 +113,8 @@ ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class
 </div>
 <div id="cache-an-access-token-to-disk" class="section level2">
 <h2>Cache an access token to disk</h2>
-<p>When the <code>cache</code> argument and the <code>rga.cache</code> option is not changed, then after successful authorization the <code>.ga-token.rds</code> file with access token to Google API will be created in the current working directory. The <code>.ga-token.rds</code> file is used between sessions, i.e. at a subsequent call to the <code>authorize()</code> function and authorization in the browser tab is not required. Using the <code>cache</code> argument you can also suppress caching (<code>FALSE</code> value) or specify an alternate path to the file storage (in this case It is necessary to specify the path and file name explicitly).</p>
+<p>When the <code>cache</code> argument and the <code>rga.cache</code> option is not changed and <code>username</code> param is not specified, then after successful authorization the <code>.ga-token.rds</code> file with access token to Google API will be created in the current working directory. The <code>.ga-token.rds</code> file is used between sessions, i.e. at a subsequent call to the <code>authorize()</code> function and authorization in the browser tab is not required. If <code>username</code> argument specified token will be cached in the <code>.username-token.rds</code> file.</p>
+<p>Using the <code>cache</code> argument you can also suppress caching (<code>FALSE</code> value) or specify an alternate path to the file storage (in this case It is necessary to specify the path and file name explicitly).</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">authorize</span>(client.id, client.secret, <span class="dt">cache =</span> <span class="st">&quot;/path/to/file&quot;</span>)</code></pre>
 <p>Also you can specify a cache path to change <code>rga.cache</code> option. After this you no need specify <code>cache</code> argument for calling <code>authorize()</code> function:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">rga.cache =</span> <span class="st">&quot;/path/to/file&quot;</span>)
@@ -128,6 +129,10 @@ home_token &lt;-<span class="st"> </span><span class="kw">authorize</span>(clien
 <p>or define a specific cache path for each token:</p>
 <pre class="sourceCode r"><code class="sourceCode r">work_token &lt;-<span class="st"> </span><span class="kw">authorize</span>(client.id1, client.secret1, <span class="dt">cache =</span> <span class="st">&quot;work.token&quot;</span>)
 home_token &lt;-<span class="st"> </span><span class="kw">authorize</span>(client.id2, client.secret2, <span class="dt">cache =</span> <span class="st">&quot;home.token&quot;</span>)</code></pre>
+<p>Also you can specify <code>username</code> argument:</p>
+<pre class="sourceCode r"><code class="sourceCode r">work_token &lt;-<span class="st"> </span><span class="kw">authorize</span>(<span class="dt">username =</span> <span class="st">&quot;home@domain.com&quot;</span>)
+home_token &lt;-<span class="st"> </span><span class="kw">authorize</span>(<span class="dt">username =</span> <span class="st">&quot;work2@domain.com&quot;</span>)</code></pre>
+<p>Tokens will be stored to the separated files.</p>
 <p>Then pass this token to other functions:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">list_profiles</span>(<span class="dt">token =</span> work_token)
 <span class="kw">list_profiles</span>(<span class="dt">token =</span> home_token)</code></pre>

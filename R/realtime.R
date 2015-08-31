@@ -8,7 +8,7 @@
 #' @param max.results integer. The maximum number of entries to include in this feed.
 #' @param token \code{\link[httr]{Token2.0}} class object with a valid authorization data.
 #'
-#' @return A data frame including the real time data for a view (profile).
+#' @return A data frame including the real time data for a view (profile). Addition information about profile and request query stored in the attributes.
 #'
 #' @references
 #' \href{https://developers.google.com/analytics/devguides/reporting/realtime/dimsmets/}{Real Time Reporting API - Dimensions & Metrics Reference}
@@ -20,27 +20,40 @@
 #' @examples
 #' \dontrun{
 #' # get token data
-#' authorize(client.id = "client_id", client.secret = "client_sevret")
+#' authorize()
 #' # get report data
-#' ga_data <- get_rt("profile_id", metrics = "rt:activeUsers", dimensions = "rt:source,rt:medium")
+#' ga_data <- get_realtime("profile_id", metrics = "rt:activeUsers",
+#'                         dimensions = "rt:source,rt:medium")
 #' # get active users in realtime (press Esc to abort)
 #' while (TRUE) {
 #'     cat("\014")
-#'     print(get_rt("profile_id", metrics = "rt:activeUsers"))
+#'     print(get_realtime("profile_id", metrics = "rt:activeUsers"))
 #'     Sys.sleep(2)
 #' }
 #' }
 #'
 #' @include report.R
 #'
+#' @aliases get_rt
+#'
+#' @export
+#'
+get_realtime <- function(profile.id, metrics = "rt:activeUsers", dimensions = NULL,
+                   sort = NULL, filters = NULL, max.results = NULL, token) {
+    query <- build_query(profile.id = profile.id, metrics = metrics, dimensions = dimensions,
+                         sort = sort, filters = filters, max.results = max.results)
+    res <- get_report(type = "realtime", query = query, token = token)
+    return(res)
+}
+
 #' @export
 #'
 get_rt <- function(profile.id, metrics = "rt:activeUsers", dimensions = NULL,
                    sort = NULL, filters = NULL, max.results = NULL, token) {
-    stopifnot(!is.null(profile.id), nzchar(profile.id),
-              !is.null(metrics), nzchar(metrics))
     query <- build_query(profile.id = profile.id, metrics = metrics, dimensions = dimensions,
                          sort = sort, filters = filters, max.results = max.results)
-    res <- get_report(type = "rt", query = query, token = token)
+    .Deprecated("get_realtime")
+    res <- get_report(type = "realtime", query = query, token = token)
     return(res)
 }
+

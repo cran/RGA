@@ -33,7 +33,7 @@ get_mcf(profile.id, start.date = "7daysAgo", end.date = "yesterday",
 \item{token}{\code{\link[httr]{Token2.0}} class object with a valid authorization data.}
 }
 \value{
-A data frame including the Analytics Multi-Channel Funnels data for a view (profile)
+A data frame including the Analytics Multi-Channel Funnels data for a view (profile). Addition information about profile and request query stored in the attributes.
 }
 \description{
 Get the Anaytics data from Multi-Channel Funnels Reporting API for a view (profile)
@@ -41,7 +41,7 @@ Get the Anaytics data from Multi-Channel Funnels Reporting API for a view (profi
 \examples{
 \dontrun{
 # get token data
-authorize(client.id = "client_id", client.secret = "client_sevret")
+authorize()
 # get report data
 ga_data <- get_mcf("profile_id", start.date = "30daysAgo", end.date = "today",
                    metrics = "mcf:totalConversions",
@@ -57,6 +57,7 @@ ga_data <- get_mcf("profile_id", start.date = "30daysAgo", end.date = "today",
 \code{\link{authorize}}
 
 Other Reporting API: \code{\link{firstdate}};
-  \code{\link{get_ga}}; \code{\link{get_rt}}
+  \code{\link{get_ga}}; \code{\link{get_realtime}},
+  \code{\link{get_rt}}
 }
 

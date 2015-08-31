@@ -64,6 +64,9 @@ to_camel <- function(x, delim = "\\W", capitalize = FALSE) {
 #' @noRd
 #'
 to_separated <- function(x, sep = ".") {
+    x <- gsub("PropertyId", "propertyId", x, fixed = TRUE)
+    x <- gsub("-", ".", x, fixed = TRUE)
+    x <- gsub("ids", "profile.id", x, fixed = TRUE)
     x <- gsub("([a-z])([A-Z])", paste0("\\1", sep, "\\L\\2"), x, perl = TRUE)
     return(x)
 }
