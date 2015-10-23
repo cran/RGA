@@ -16,7 +16,9 @@ Key features:
     - [Multi-Channel Funnels Reporting API](https://developers.google.com/analytics/devguides/reporting/mcf/v3): query the traffic source paths that lead to a user's goal conversion;
     - [Real Time Reporting API](https://developers.google.com/analytics/devguides/reporting/realtime/v3): report on activity occurring on your property at the moment;
     - [Metadata API](https://developers.google.com/analytics/devguides/reporting/metadata/v3): access the list of API dimensions and metrics and their attributes;
-* Auto-pagination to return more than 10,000 rows of the results by combining multiple data requests.
+* Auto-pagination to return more than 10,000 rows of the results by combining multiple data requests;
+* Split the query by date ranges to avoid a sampling data;
+* Shiny app to explore all the dimensions and metrics available through the Core Reporting API.
 
 ## Installation
 
@@ -66,6 +68,8 @@ First check the changes in the latest version of the package. Type type into R:
 news(package = "RGA", Version == packageVersion("RGA"))
 ```
 
+Try reproduce a bug with the latest development version from Git.
+
 Before posting a bug please try execute your code with the `httr::with_verbose()` wrapper. It will be useful if you attach verbose output to the bug report.
 
 ```r
@@ -73,7 +77,7 @@ httr::with_verbose(list_profiles())
 httr::with_verbose(get_ga("XXXXXXXX"))
 ```
 
-Post the `traceback()` output also may be helpful.
+Post the `traceback()` and `sessionInfo()` output also may be helpful.
 
 To report a bug please type into R:
 

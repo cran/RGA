@@ -34,9 +34,11 @@ A web property collection lists Analytics web properties to which the user has a
 Lists web properties which the user has access to
 }
 \references{
-\href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/webproperties}{Google Management API - Web Properties}
+\href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/webproperties}{Management API - Web Properties}
 
 \href{https://ga-dev-tools.appspot.com/account-explorer/}{Google Analytics Demos & Tools - Account Explorer}
+
+\href{https://support.google.com/analytics/answer/1009618?vid=1-635777221050507375-76049587}{Analytics Help - Hierarchy of accounts, users, properties, and views}
 }
 \seealso{
 \code{\link{authorize}}
@@ -46,7 +48,7 @@ Other Management API: \code{\link{get_custom_dimension}};
   \code{\link{get_experiment}}; \code{\link{get_filter}};
   \code{\link{get_goal}}; \code{\link{get_profile}};
   \code{\link{get_unsampled_report}};
-  \code{\link{get_webproperty}};
+  \code{\link{get_upload}}; \code{\link{get_webproperty}};
   \code{\link{list_accounts}};
   \code{\link{list_custom_dimensions}};
   \code{\link{list_custom_metrics}};
@@ -54,6 +56,7 @@ Other Management API: \code{\link{get_custom_dimension}};
   \code{\link{list_experiments}};
   \code{\link{list_filters}}; \code{\link{list_goals}};
   \code{\link{list_profiles}}; \code{\link{list_segments}};
-  \code{\link{list_unsampled_reports}}
+  \code{\link{list_unsampled_reports}};
+  \code{\link{list_uploads}}
 }
 

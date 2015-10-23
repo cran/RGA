@@ -24,7 +24,7 @@
 #' @seealso \code{\link{authorize}}
 #'
 #' @references
-#' \href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/customDimensions}{Google Management API - Custom Dimensions}
+#' \href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/customDimensions}{Management API - Custom Dimensions}
 #'
 #' @family Management API
 #'
@@ -33,7 +33,7 @@
 #' @export
 #'
 get_custom_dimension <- function(account.id, webproperty.id, dimension.id, token) {
-    path <- paste("accounts", account.id, "webproperties", webproperty.id, "customDimensions", dimension.id, sep = "/")
+    path <- c("accounts", account.id, "webproperties", webproperty.id, "customDimensions", dimension.id)
     res <- get_mgmt(path = path, token = token)
     return(res)
 }
@@ -60,7 +60,7 @@ get_custom_dimension <- function(account.id, webproperty.id, dimension.id, token
 #' @seealso \code{\link{authorize}}
 #'
 #' @references
-#' \href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/customDimensions}{Google Management API - Custom Dimensions}
+#' \href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/customDimensions}{Management API - Custom Dimensions}
 #'
 #' @family Management API
 #'
@@ -69,7 +69,7 @@ get_custom_dimension <- function(account.id, webproperty.id, dimension.id, token
 #' @export
 #'
 list_custom_dimensions <- function(account.id, webproperty.id, start.index = NULL, max.results = NULL, token) {
-    path <- paste("accounts", account.id, "webproperties", webproperty.id, "customDimensions", sep = "/")
+    path <- c("accounts", account.id, "webproperties", webproperty.id, "customDimensions")
     query <- list(start.index = start.index, max.results = max.results, fields = "items(id,accountId,webPropertyId,name,index,scope,active,created,updated)")
     res <- list_mgmt(path = path, query = query, token = token)
     return(res)

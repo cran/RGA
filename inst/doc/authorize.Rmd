@@ -23,10 +23,11 @@ Before you send any requests to the Google Analytics API, it's necessary to perf
 ```r
 authorize()
 ```
+(Please note that you can immediately revoke the authorization in Google Account Management page [Apps connected to your account](https://security.google.com/settings/security/permissions), so that no need to worry about the security of your Google account. For more details please go to the section below *Revoke access application*)
 
 After calling this function first time, a web browser will be opened. If `username` argument was not specified you need choose an account for the authorization. First entrance with a **Google Account** confirms access to the Google Analytics data. Note that the package requests access for the **read-only** data.
 
-When the `authorize()` function is used, the `GAToken` (can be changed with `rga.token` option) variable is created in the separate `TokenEnv` environment which not visible for user. So, there is no need to pass every time the `token` argument to any function which requires authorization.
+When the `authorize()` function is used, the `Token` variable is created in the separate `.RGAEnv` environment which not visible for user. So, there is no need to pass every time the `token` argument to any function which requires authorization.
 
 ```r
 list_profiles()
@@ -60,13 +61,16 @@ Step by step instructions are as follows:
     - Click **Enable API** for activation **Analytics API**.
 3. Creating a new application:
     - Select **APIs & auth** and then **Credentials** sub-menu in the left sidebar;
-    - Click **Create new Client ID** on the left side of the page;
-    - Select **Installed application** from the APPLICATION TYPE list and **Other** from INSTALLED APPLICATION TYPE list in the pop-up window.
-    - Click on the **Create Client ID** button to confirm the creation of the application.
+    - Click on **Add credentials** blue button at the top left of the page;
+    - Select **OAuth 2.0 client ID** in the pop-up window;
+    - Select **Other** from Application type list;
+    - Change name of the client if you need;
+    - Click on the **Create** blue button to confirm the creation of the client ID.
 4. Obtaining Client ID and Client secret:
-    - Select the project from the project list on the https://console.developers.google.com/project page;
+    - Select the project from the project list on the <https://console.developers.google.com/project> page;
     - Select **APIs & auth** and then **Credentials** sub-menu in the left sidebar;
-    - Copy the values of the following fields: **Client ID** and **Client secret** in the **Client ID for native application** table.
+    - Click on name of the client from the **Name column** in the **OAuth 2.0 client IDs** table;
+    - Copy the values of the following fields: **Client ID** and **Client secret**.
 
 You can return to the [Google Developers Console](https://console.developers.google.com/project) at any time to view the **Client ID** and **Client secret** on the Client ID for native application section on Credentials page.
 
@@ -148,7 +152,7 @@ list_profiles(token = home_token)
 
 ## Revoke access application
 
-To revoke access the \pkg{RGA} package do the following:
+To revoke access the `RGA` package do the following:
 
 1. Go to the [Apps connected to your account](https://security.google.com/settings/security/permissions) page;
 1. Find **RGA package** entry. Then click on it;

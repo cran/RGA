@@ -2,13 +2,12 @@
 % Please edit documentation in R/metadata.R
 \name{list_dimsmets}
 \alias{list_dimsmets}
-\alias{list_metadata}
 \title{Lists all the dimensions and metrics for a particular report type}
 \usage{
 list_dimsmets(report.type = "ga")
 }
 \arguments{
-\item{report.type}{character. Report type. Allowed Values: \dQuote{ga}. Where \dQuote{ga} corresponds to the Core Reporting API.}
+\item{report.type}{character. Report type. Allowed Values: "ga". Where "ga" corresponds to the Core Reporting API.}
 }
 \value{
 A data.frame contains dimensions and metrics for a particular report type.
@@ -53,6 +52,6 @@ subset(ga_meta, allowed.in.segments, id)
 \href{https://developers.google.com/analytics/devguides/reporting/core/dimsmets}{Core Reporting API - Dimensions & Metrics Reference}
 }
 \seealso{
-\code{\link{get_ga}}
+\code{\link{shiny_dimsmets}} \code{\link{get_ga}}
 }
 

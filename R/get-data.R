@@ -1,49 +1,53 @@
 # Get the Google Analytics API data
+#' @include url.R
 #' @include request.R
-get_data <- function(type = c("ga", "realtime", "mcf", "mgmt"), path = NULL, query = NULL, token) {
-    type <- match.arg(type)
+#' @include convert.R
+get_data <- function(path = NULL, query = NULL, token) {
     # Set limits
-    if (type == "mgmt") {
-        results_limit <- 1000L
-        items_name <- "items"
+    if (grepl("management", paste(path, collapse = "/"))) {
+        limit <- 1000L
+        items <- "items"
     } else {
-        results_limit <- 10000L
-        items_name <- "rows"
+        limit <- 10000L
+        items <- "rows"
     }
     if (is.null(query$max.results)) {
         pagination <- TRUE
-        query$max.results <- results_limit
+        query$max.results <- limit
     } else {
         pagination <- FALSE
-        stopifnot(query$max.results <= results_limit)
+        if (query$max.results > limit)
+            stop(sprintf("Can't retry more than %d results for this API. Set max.results = NULL (default value) to get all results.", limit), call. = FALSE)
     }
-    # Add fields
-    if (!is.null(query$fields) && type == "mgmt")
-        query$fields <- paste("totalResults", "username", query$fields, sep = ",")
     # Make request
-    data_json <- get_response(type = type, path = path, query = query, token = token)
-    if (data_json$totalResults == 0L || is.null(data_json[[items_name]]) || length(data_json[[items_name]]) == 0L)
+    res <- GET_(get_url(path, query), token)
+    if (res$total.results == 0L || is.null(res[[items]]) || length(res[[items]]) == 0L)
         return(NULL)
-    if (!isTRUE(pagination) && query$max.results < data_json$totalResults)
-        warning(paste("Only", query$max.results, "observations out of", data_json$totalResults, "were obtained. Set max.results = NULL (default value) to get all results."), call. = FALSE)
+    if (!isTRUE(pagination) && query$max.results < res$total.results)
+        warning(sprintf("Only %d observations out of %d were obtained. Set max.results = NULL (default value) to get all results.", query$max.results, res$total.results), call. = FALSE)
     # Pagination
-    if (isTRUE(pagination) && query$max.results < data_json$totalResults) {
-        if (type == "realtime")
-            warning(paste("Only", query$max.results, "observations out of", data_json$totalResults, "were obtained (the batch processing mode is not implemented for this report type)."), call. = FALSE)
+    if (isTRUE(pagination) && query$max.results < res$total.results) {
+        if (grepl("data/realtime", paste(path, collapse = "/")))
+            warning(sprintf("Only %d observations out of %d were obtained (the batch processing mode is not implemented for this report type).", query$max.results, res$total.results), call. = FALSE)
         else {
-            message(paste("Response contain more then", query$max.results, "rows. Batch processing mode enabled."))
-            total.pages <- ceiling(data_json$totalResults / query$max.results)
+            message(sprintf("API response contains more then %d items. Batch processing mode enabled.", query$max.results))
+            total.pages <- ceiling(res$total.results / query$max.results)
             pages <- vector(mode = "list", length = total.pages)
-            for (page in 2L:total.pages) {
-                message(paste0("Fetching page ", page, " of ", total.pages, "..."))
-                query$start.index <- query$max.results * (page - 1L) + 1L
-                pages[[page]] <- get_response(type = type, path = path, query = query, token = token)
+            pb <- utils::txtProgressBar(min = 0, max = total.pages, initial = 1, style = 3)
+            for (i in 2L:total.pages) {
+                query$start.index <- query$max.results * (i - 1L) + 1L
+                pages[[i]] <- GET_(get_url(path, query), token)[[items]]
+                utils::setTxtProgressBar(pb, i)
             }
-            pages <- pages[-1L]
-            pages <- lapply(pages, `[[`, items_name)
-            data_json[[items_name]] <- c(list(data_json[[items_name]]), pages)
+            pages[[1L]] <- res[[items]]
+            if (is.matrix(pages[[1L]]) || is.data.frame(pages[[1L]]))
+                pages <- do.call(rbind, pages)
+            else if (is.list(pages[[1L]]))
+                pages <- do.call(c, pages)
+            res[[items]] <- pages
+            close(pb)
         }
     }
-    data_json[[items_name]] <- build_df(type, data_json)
-    return(data_json)
+    res[[items]] <- build_df(res)
+    return(res)
 }

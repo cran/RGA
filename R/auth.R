@@ -1,36 +1,51 @@
-# Set global variables to be shared with other functions
-if (getRversion() >= "2.15.1") utils::globalVariables(c("GAToken"))
-
-# Environment for OAuth token
-TokenEnv <- new.env(parent = emptyenv())
-
-# Check token exists
-token_exists <- function(name) {
-    exists(name, envir = TokenEnv)
-}
-
 # Set token to environment
-set_token <- function(name, value) {
-    assign(name, value, envir = TokenEnv)
+#' @include env.R
+set_token <- function(value) {
+    .RGAEnv$Token <- value
     return(value)
 }
 
 # Get token from environment
-get_token <- function(name) {
-    get(name, envir = TokenEnv)
+#' @include env.R
+get_token <- function() {
+    .RGAEnv$Token
 }
 
 # Remove token from environment
-remove_token <- function(name) {
-    if (token_exists(name))
-        remove(list = name, envir = TokenEnv)
+remove_token <- function(token) {
+    cache_path <- token$cache_path
+    default_path <- getOption("rga.cache")
+    if (is.null(cache_path))
+        cache_path <- default_path
+    if (!is.null(cache_path) && cache_path != default_path)
+        cache_path <- c(cache_path, default_path)
+    e <- file.exists(cache_path)
+    if (any(e)) {
+        message(sprintf("Removed old cache files: %s.", paste(cache_path[e], collapse = ", ")))
+        file.remove(cache_path[e])
+    }
+    set_token(NULL)
+}
+
+# Validate token
+validate_token <- function(token) {
+    if (missing(token))
+         stop("Authorization error. Access token not found.")
+    if (!inherits(token, "Token2.0"))
+        stop(sprintf("Token is not a Token2.0 object. Found: %s.", class(token)))
+    if (!is.null(token$credentials$error)) {
+        if (token$credentials$error == "invalid_request")
+            stop("Authorization error. No access token obtained.")
+        if (token$credentials$error == "invalid_client")
+            stop("Authorization error. Please check client.id and client.secret.")
+    }
+    return(TRUE)
 }
 
 # Check environment variables exists
 env_exists <- function(...) {
     dots <- list(...)
-    res <- lapply(dots, Sys.getenv)
-    vapply(res, nzchar, logical(1))
+    nzchar(Sys.getenv(dots))
 }
 
 # Fix username without domain
@@ -54,9 +69,9 @@ fix_username <- function(x) {
 #'
 #' After calling this function first time, a web browser will be opened. First, log in with a Google Account, confirm the authorization to access the Google Analytics data. Note that the package requests access for read-only data.
 #'
-#' When the \code{authorize()} function is used the \code{GAToken} variable is created in the separate \code{TokenEnv} environment which is not visible for user. So, there is no need to pass the token argument to any function which requires authorization every time. Also there is a possibility to store token in separate variable and to pass it to the functions. It can be useful when you are working with several accounts at the same time.
+#' When the \code{authorize()} function is used the \code{Token} variable is created in the separate \code{.RGAEnv} environment which is not visible for user. So, there is no need to pass the token argument to any function which requires authorization every time. Also there is a possibility to store token in separate variable and to pass it to the functions. It can be useful when you are working with several accounts at the same time.
 #'
-#' \code{username}, \code{client.id}, \code{client.secret} and \code{cache} params can be specified by an appropriate options (with \dQuote{rga} prefix).
+#' \code{username}, \code{client.id} and \code{client.secret} params can be specified by an appropriate options (with \dQuote{RGA} prefix): \env{RGA_USERNAME}, \env{RGA_CLIENT_ID}, \env{RGA_CLIENT_SECRET}.
 #'
 #' @section Use custom Client ID and Client secret:
 #'
@@ -68,7 +83,7 @@ fix_username <- function(x) {
 #'   \item Select \emph{APIs & auth} in the sidebar on the left.
 #'   \item In the list of APIs select \emph{Analytics API}. Then click \emph{Enable API}.
 #'   \item Select \emph{Credentials} in the sidebar on the left.
-#'   \item To set up a service account select \emph{Create New Client ID}. Select \emph{Installed Application} and \emph{Others} options and then select \emph{Create Client ID}.
+#'   \item To set up a service account select \emph{Add credentials}. Select \emph{OAuth 2.0 client ID} and \emph{Other} options and then select \emph{Create}.
 #' }
 #'
 #' You can return to the \href{https://console.developers.google.com/}{Google Developers Console} at any time to view the client ID and client secret on the \emph{Client ID for native application} section on \emph{Credentials} page.
@@ -114,9 +129,6 @@ fix_username <- function(x) {
 #' ga_token <- authorize(client.id = "my_id", client.secret = "my_secret")
 #' }
 #'
-#' @importFrom httr oauth_app oauth_endpoints oauth2.0_token
-#' @import httpuv
-#'
 #' @export
 #'
 authorize <- function(username = getOption("rga.username"),
@@ -133,22 +145,23 @@ authorize <- function(username = getOption("rga.username"),
         message("Username loaded from environment variable.")
         username <- Sys.getenv("RGA_USERNAME")
     }
-    app <- oauth_app(appname = "rga", key = client.id, secret = client.secret)
-    endpoint <- oauth_endpoints("google")
+    app <- httr::oauth_app(appname = "rga", key = client.id, secret = client.secret)
+    endpoint <- httr::oauth_endpoints("google")
     if (!is.null(username)) {
         stopifnot(is.character(username))
         stopifnot(length(username) == 1)
         username <- fix_username(username)
         endpoint$authorize <- paste0(endpoint$authorize, "?login_hint=", username)
-        cache <- paste0(".", username, "-token.rds")
-    }
-    if (new.auth) {
-        remove_token(getOption("rga.token"))
         if (is.character(cache))
-            unlink(cache)
+            cache <- paste0(".", username, "-token.rds")
     }
-    token <- oauth2.0_token(endpoint = endpoint, app = app, cache = cache,
+    if (new.auth)
+        remove_token(get_token())
+    if (is.character(cache) && nzchar(cache))
+        message(sprintf("Access token will be stored in the '%s' file.", cache))
+    token <- httr::oauth2.0_token(endpoint = endpoint, app = app, cache = cache,
                             scope = "https://www.googleapis.com/auth/analytics.readonly")
-    set_token(getOption("rga.token"), token)
-    invisible(token)
+    if (validate_token(token))
+        set_token(token)
+    return(invisible(token))
 }

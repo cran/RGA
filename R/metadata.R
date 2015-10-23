@@ -3,7 +3,7 @@
 #' @description
 #' This dataset represents all of the dimensions and metrics for the reporting API with their attributes. Attributes returned include UI name, description, segments support, etc.
 #'
-#' @param report.type character. Report type. Allowed Values: \dQuote{ga}. Where \dQuote{ga} corresponds to the Core Reporting API.
+#' @param report.type character. Report type. Allowed Values: "ga". Where "ga" corresponds to the Core Reporting API.
 #'
 #' @return A data.frame contains dimensions and metrics for a particular report type.
 #' \item{id}{Parameter name.}
@@ -21,21 +21,15 @@
 #' \item{premium.min.template.index}{Only available for templatized columns. This is the minimum index for the column for premium properties.}
 #' \item{premium.max.template.index}{Only available for templatized columns. This is the maximum index for the column for premium properties.}
 #'
-#' @seealso \code{\link{get_ga}}
+#' @seealso \code{\link{shiny_dimsmets}} \code{\link{get_ga}}
 #'
 #' @references
 #' \href{https://developers.google.com/analytics/devguides/reporting/metadata/v3/}{Google Analytics Metadata API}
 #'
 #' \href{https://developers.google.com/analytics/devguides/reporting/core/dimsmets}{Core Reporting API - Dimensions & Metrics Reference}
 #'
-#' @importFrom httr GET accept_json content
-#' @importFrom jsonlite fromJSON
-#'
 #' @include url.R
 #' @include request.R
-#' @include convert.R
-#'
-#' @aliases list_metadata
 #'
 #' @export
 #'
@@ -57,26 +51,29 @@
 #' }
 #'
 list_dimsmets <- function(report.type = "ga") {
-    url <- paste(base_api_url, base_api_version, "metadata", report.type, "columns", sep = "/")
-    resp <- GET(url, accept_json())
-    data_json <- fromJSON(content(resp, as = "text"), flatten = TRUE)
-    if (!is.null(data_json$error))
-        error_message(data_json)
-    data_df <- data_json$items
-    data_df$kind <- NULL
-    colnames(data_df) <- gsub("attributes.", "", colnames(data_df), fixed = TRUE)
-    data_df$allowedInSegments <- match(data_df$allowedInSegments, "true", nomatch = 0) > 0
-    colnames(data_df) <- to_separated(colnames(data_df), sep = ".")
-    data_df <- convert_datatypes(data_df)
-    message(paste("Obtained data.frame with", nrow(data_df), "rows and", ncol(data_df), "columns."))
-    return(data_df)
+    url <- get_url(c("metadata", report.type, "columns"))
+    data_ <- process(httr::GET(url))
+    res <- data_$items
+    res$kind <- NULL
+    colnames(res) <- gsub("attributes.", "", colnames(res), fixed = TRUE)
+    res$allowed.in.segments <- utils::type.convert(toupper(res$allowed.in.segments))
+    return(res)
 }
 
+#' @title The Shiny Dimensions & Metrics Explorer
+#'
+#' @description
+#' The dimensions and metrics explorer lists and describes all the dimensions and metrics available through the Core Reporting API. This app deployed to the \url{https://artemklevtsov.shinyapps.io/ga-dimsmets}.
+#'
+#' @seealso \code{\link{list_dimsmets}} \code{\link{get_ga}}
+#'
 #' @export
 #'
-list_metadata <- function(report.type = "ga") {
-    .Deprecated("list_dimsmets")
-    return(list_dimsmets(report.type))
+shiny_dimsmets <- function() {
+    appDir <- system.file("shiny-examples", "01-dimsmets", package = "RGA")
+    if (appDir == "")
+        stop("Could not find example directory. Try re-installing 'RGA' package.", call. = FALSE)
+    shiny::runApp(appDir, display.mode = "normal")
 }
 
 #' @title Lists all columns for a Google Analytics core report type

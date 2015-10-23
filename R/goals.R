@@ -26,7 +26,7 @@
 #' @seealso \code{\link{authorize}}
 #'
 #' @references
-#' \href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/goals}{Google Management API - Goals}
+#' \href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/goals}{Management API - Goals}
 #'
 #' @family Management API
 #'
@@ -35,7 +35,7 @@
 #' @export
 #'
 get_goal <- function(account.id, webproperty.id, profile.id, goal.id, token) {
-    path <- paste("accounts", account.id, "webproperties", webproperty.id, "profiles", profile.id, "goals", goal.id, sep = "/")
+    path <- c("accounts", account.id, "webproperties", webproperty.id, "profiles", profile.id, "goals", goal.id)
     res <- get_mgmt(path = path, token = token)
     return(res)
 }
@@ -64,7 +64,7 @@ get_goal <- function(account.id, webproperty.id, profile.id, goal.id, token) {
 #' @seealso \code{\link{authorize}}
 #'
 #' @references
-#' \href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/goals}{Google Management API - Goals}
+#' \href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/goals}{Management API - Goals}
 #'
 #' @family Management API
 #'
@@ -73,7 +73,7 @@ get_goal <- function(account.id, webproperty.id, profile.id, goal.id, token) {
 #' @export
 #'
 list_goals = function(account.id = "~all", webproperty.id = "~all", profile.id = "~all", start.index = NULL, max.results = NULL, token) {
-    path <- paste("accounts", account.id, "webproperties", webproperty.id, "profiles", profile.id, "goals", sep = "/")
+    path <- c("accounts", account.id, "webproperties", webproperty.id, "profiles", profile.id, "goals")
     query <- list(start.index = start.index, max.results = max.results, fields = "items(id,accountId,webPropertyId,profileId,name,active,value,type,created,updated)")
     res <- list_mgmt(path = path, query = query, token = token)
     return(res)

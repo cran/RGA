@@ -7,28 +7,30 @@
 get_mcf(profile.id, start.date = "7daysAgo", end.date = "yesterday",
   metrics = "mcf:totalConversions", dimensions = NULL, sort = NULL,
   filters = NULL, sampling.level = NULL, start.index = NULL,
-  max.results = NULL, token)
+  max.results = NULL, fetch.by = NULL, token)
 }
 \arguments{
 \item{profile.id}{integer or character. Unique table ID for retrieving Analytics data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID. Can be obtained using the \code{\link{list_profiles}} or via the web interface Google Analytics.}
 
-\item{start.date}{character. Start date for fetching Analytics data. Request can specify a start date formatted as YYYY-MM-DD or as a relative date (e.g., today, yesterday, or 7daysAgo). The default value is 7daysAgo.}
+\item{start.date}{character. Start date for fetching Analytics data. Request can specify a start date formatted as "YYYY-MM-DD" or as a relative date (e.g., "today", "yesterday", or "7daysAgo"). The default value is "7daysAgo".}
 
-\item{end.date}{character. End date for fetching Analytics data. Request can specify an end date formatted as YYYY-MM-DD or as a relative date (e.g., today, yester-day, or 7daysAgo). The default value is yesterday.}
+\item{end.date}{character. End date for fetching Analytics data. Request can specify an end date formatted as "YYYY-MM-DD" or as a relative date (e.g., "today", "yesterday", or "7daysAgo"). The default value is "yesterday".}
 
 \item{metrics}{character. A comma-separated list of Multi-Channel Funnels metrics. E.g., \code{"mcf:totalConversions,mcf:totalConversionValue"}. At least one metric must be specified.}
 
-\item{dimensions}{character. A comma-separated list of Multi-Channel Funnels dimensions. E.g., code{"mcf:source,mcf:medium"}.}
+\item{dimensions}{character. A comma-separated list of Multi-Channel Funnels dimensions. E.g., \code{"mcf:source,mcf:medium"}.}
 
 \item{sort}{character. character. A comma-separated list of dimensions or metrics that determine the sort order for Analytics data.}
 
 \item{filters}{character. A comma-separated list of dimension or metric filters to be applied to Analytics data.}
 
-\item{sampling.level}{character. The desired sampling level. Allowed values: "default", "faster", "higher_precision".}
+\item{sampling.level}{character. The desired sampling level. Allowed values: "DEFAULT", "FASTER", "HIGHER_PRECISION".}
 
 \item{start.index}{integer. An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.}
 
 \item{max.results}{integer. The maximum number of entries to include in this feed.}
+
+\item{fetch.by}{character. Split the query by date range. Allowed values: "day", "week", "month", "quarter", "year".}
 
 \item{token}{\code{\link[httr]{Token2.0}} class object with a valid authorization data.}
 }
@@ -43,7 +45,7 @@ Get the Anaytics data from Multi-Channel Funnels Reporting API for a view (profi
 # get token data
 authorize()
 # get report data
-ga_data <- get_mcf("profile_id", start.date = "30daysAgo", end.date = "today",
+ga_data <- get_mcf(XXXXXXX, start.date = "30daysAgo", end.date = "today",
                    metrics = "mcf:totalConversions",
                    dimensions = "mcf:source,mcf:medium")
 }

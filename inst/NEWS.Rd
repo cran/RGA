@@ -2,6 +2,23 @@
 \title{News for Package \pkg{RGA}}
 \encoding{UTF-8}
 
+\section{Changes in RGA version 0.3 (2015-10-23)}{
+  \itemize{
+    \item Updated data
+    \item Removed \sQuote{Common Queries} vegnette. See references in the \code{get_ga()} help page
+    \item Added (returned) \code{shiny_dimsmets()} to explore dimensions and metrics for the Core Reporting API
+    \item Removed unused the \code{rga.token} package option
+    \item Removed deprecated \code{get_rt()} function. Use \code{get_realtime()} instead
+    \item The \code{sampling.level} argument value now must be in the upper case
+    \item Added text progress bar when batch processing mode enabled
+    \item Added \code{fetch.by} option for the \code{get_ga()} and \code{get_mcf()} functions to split the queries by date ranges (day, week, month, quarter, year)
+    \item Added the \CRANpkg{shiny} an example application authorization
+    \item Added the \CRANpkg{shiny} an example fetching realtime reporting data
+    \item If User Rate Limit Exceeded or Quota Exceeded error occurs, the request is retried using exponential backoff
+    \item Some inner code improvements
+  }
+}
+
 \section{Changes in RGA version 0.2.4 (2015-08-31)}{
   \itemize{
     \item Updated data

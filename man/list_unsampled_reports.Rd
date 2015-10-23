@@ -42,7 +42,7 @@ An unsampled report collection lists Analytics unsampled reports to which the us
 Lists unsampled reports which the user has access to
 }
 \references{
-\href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/unsampledReports}{Google Management API - Unsampled Reports}
+\href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/unsampledReports}{Management API - Unsampled Reports}
 }
 \seealso{
 \code{\link{authorize}}
@@ -52,7 +52,7 @@ Other Management API: \code{\link{get_custom_dimension}};
   \code{\link{get_experiment}}; \code{\link{get_filter}};
   \code{\link{get_goal}}; \code{\link{get_profile}};
   \code{\link{get_unsampled_report}};
-  \code{\link{get_webproperty}};
+  \code{\link{get_upload}}; \code{\link{get_webproperty}};
   \code{\link{list_accounts}};
   \code{\link{list_custom_dimensions}};
   \code{\link{list_custom_metrics}};
@@ -60,6 +60,7 @@ Other Management API: \code{\link{get_custom_dimension}};
   \code{\link{list_experiments}};
   \code{\link{list_filters}}; \code{\link{list_goals}};
   \code{\link{list_profiles}}; \code{\link{list_segments}};
+  \code{\link{list_uploads}};
   \code{\link{list_webproperties}}
 }
 

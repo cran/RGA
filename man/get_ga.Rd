@@ -7,14 +7,14 @@
 get_ga(profile.id, start.date = "7daysAgo", end.date = "yesterday",
   metrics = "ga:users,ga:sessions,ga:pageviews", dimensions = NULL,
   sort = NULL, filters = NULL, segment = NULL, sampling.level = NULL,
-  start.index = NULL, max.results = NULL, token)
+  start.index = NULL, max.results = NULL, fetch.by = NULL, token)
 }
 \arguments{
 \item{profile.id}{integer or character. Unique table ID for retrieving Analytics data. Table ID is of the form ga:XXXX, where XXXX is the Analytics view (profile) ID. Can be obtained using the \code{\link{list_profiles}} or via the web interface Google Analytics.}
 
-\item{start.date}{character. Start date for fetching Analytics data. Request can specify the start date formatted as YYYY-MM-DD or as a relative date (e.g., today, yesterday, or 7daysAgo). The default value is 7daysAgo.}
+\item{start.date}{character. Start date for fetching Analytics data. Request can specify the start date formatted as "YYYY-MM-DD" or as a relative date (e.g., "today", "yesterday", or "7daysAgo"). The default value is "7daysAgo".}
 
-\item{end.date}{character. End date for fetching Analytics data. Request can specify the end date formatted as YYYY-MM-DD or as a relative date (e.g., today, yesterday, or 7daysAgo). The default value is yesterday.}
+\item{end.date}{character. End date for fetching Analytics data. Request can specify the end date formatted as "YYYY-MM-DD" or as a relative date (e.g., "today", "yesterday", or "7daysAgo"). The default value is "yesterday".}
 
 \item{metrics}{character. A comma-separated list of Analytics metrics. E.g., \code{"ga:sessions,ga:pageviews"}. At least one metric must be specified.}
 
@@ -26,11 +26,13 @@ get_ga(profile.id, start.date = "7daysAgo", end.date = "yesterday",
 
 \item{segment}{character. An Analytics segment to be applied to data. Can be obtained using the \code{\link{list_segments}} or via the web interface Google Analytics.}
 
-\item{sampling.level}{character. The desired sampling level. Allowed values: "default", "faster", "higher_precision".}
+\item{sampling.level}{character. The desired sampling level. Allowed values: "DEFAULT", "FASTER", "HIGHER_PRECISION".}
 
 \item{start.index}{integer. An index of the first entity to retrieve. Use this parameter as a pagination mechanism along with the max-results parameter.}
 
 \item{max.results}{integer. The maximum number of entries to include in this feed.}
+
+\item{fetch.by}{character. Split the query by date range. Allowed values: "day", "week", "month", "quarter", "year".}
 
 \item{token}{\code{\link[httr]{Token2.0}} class object with a valid authorization data.}
 }
@@ -45,7 +47,7 @@ Get the Anaytics data from Core Reporting API for a view (profile)
 # get token data
 authorize()
 # get report data
-ga_data <- get_ga("profile_id", start.date = "30daysAgo", end.date = "today",
+ga_data <- get_ga(XXXXXXX, start.date = "30daysAgo", end.date = "today",
                   metrics = "ga:sessions", dimensions = "ga:source,ga:medium",
                   sort = "-ga:sessions")
 }
@@ -57,10 +59,10 @@ ga_data <- get_ga("profile_id", start.date = "30daysAgo", end.date = "today",
 
 \href{https://developers.google.com/analytics/devguides/reporting/core/v3/common-queries}{Core Reporting API - Common Queries}
 
-\href{https://ga-dev-tools.appspot.com/explorer/}{Query Explorer}
+\href{https://ga-dev-tools.appspot.com/explorer/}{Google Analytics Demos & Tools - Query Explorer}
 }
 \seealso{
-\code{\link{authorize}} \code{\link{list_dimsmets}}
+\code{\link{authorize}} \code{\link{list_dimsmets}} \code{\link{shiny_dimsmets}}
 
 Other Reporting API: \code{\link{firstdate}};
   \code{\link{get_mcf}}; \code{\link{get_realtime}},

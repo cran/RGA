@@ -27,7 +27,7 @@ An segment collection lists Analytics segments that the user has access to. Each
 Lists segments which the user has access to
 }
 \references{
-\href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/segments}{Google Management API - Segments}
+\href{https://developers.google.com/analytics/devguides/config/mgmt/v3/mgmtReference/management/segments}{Management API - Segments}
 
 \href{https://developers.google.com/analytics/devguides/reporting/core/v3/segments}{Core Reporting API - Segments}
 }
@@ -39,7 +39,7 @@ Other Management API: \code{\link{get_custom_dimension}};
   \code{\link{get_experiment}}; \code{\link{get_filter}};
   \code{\link{get_goal}}; \code{\link{get_profile}};
   \code{\link{get_unsampled_report}};
-  \code{\link{get_webproperty}};
+  \code{\link{get_upload}}; \code{\link{get_webproperty}};
   \code{\link{list_accounts}};
   \code{\link{list_custom_dimensions}};
   \code{\link{list_custom_metrics}};
@@ -48,6 +48,7 @@ Other Management API: \code{\link{get_custom_dimension}};
   \code{\link{list_filters}}; \code{\link{list_goals}};
   \code{\link{list_profiles}};
   \code{\link{list_unsampled_reports}};
+  \code{\link{list_uploads}};
   \code{\link{list_webproperties}}
 }
 
