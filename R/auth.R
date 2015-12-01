@@ -1,12 +1,14 @@
+# The inner package environment
+.RGAEnv <- new.env(parent = emptyenv())
+.RGAEnv$Token <- NULL
+
 # Set token to environment
-#' @include env.R
 set_token <- function(value) {
     .RGAEnv$Token <- value
     return(value)
 }
 
 # Get token from environment
-#' @include env.R
 get_token <- function() {
     .RGAEnv$Token
 }
@@ -30,7 +32,7 @@ remove_token <- function(token) {
 # Validate token
 validate_token <- function(token) {
     if (missing(token))
-         stop("Authorization error. Access token not found.")
+        stop("Authorization error. Access token not found.")
     if (!inherits(token, "Token2.0"))
         stop(sprintf("Token is not a Token2.0 object. Found: %s.", class(token)))
     if (!is.null(token$credentials$error)) {
@@ -75,25 +77,37 @@ fix_username <- function(x) {
 #'
 #' @section Use custom Client ID and Client secret:
 #'
-#' For some reasons you may need to use a custom client ID and client secret. In order to obtain these, you will have to register an application with the Google Analytics API. To find your project's client ID and client secret, do the following:
+#' Google Analytics is used by millions of sites. To protect the system from receiving more data than it can handle, and to ensure an equitable distribution of system resources, certain limits have been put in place.
 #'
-#' \enumerate{
-#'   \item Go to the \href{https://console.developers.google.com/}{Google Developers Console}.
-#'   \item Select a project (create if needed).
-#'   \item Select \emph{APIs & auth} in the sidebar on the left.
-#'   \item In the list of APIs select \emph{Analytics API}. Then click \emph{Enable API}.
-#'   \item Select \emph{Credentials} in the sidebar on the left.
-#'   \item To set up a service account select \emph{Add credentials}. Select \emph{OAuth 2.0 client ID} and \emph{Other} options and then select \emph{Create}.
+#' The following quota limits are shared between all \pkg{RGA} users which use the predefined credentials (daily quotas refresh at midnight PST):
+#'
+#' \itemize{
+#'   \item 50,000 requests per day
+#'   \item 10 queries per second per IP
 #' }
 #'
-#' You can return to the \href{https://console.developers.google.com/}{Google Developers Console} at any time to view the client ID and client secret on the \emph{Client ID for native application} section on \emph{Credentials} page.
+#' To get full quota, you must register your application in the Google Developers Console. When you register a new application, you are given a unique client ID to identify each application under that project. To find your project's client ID and client secret, do the following:
+#'
+#' \enumerate{
+#'   \item Open the \href{https://console.developers.google.com/project/_/apiui/credential}{Credentials page}.
+#'   \item Select a project (create if needed).
+#'   \item create your project's OAuth 2.0 credentials by clicking \emph{Add credentials} > \emph{OAuth 2.0 client ID} and select \emph{Other} application type.
+#'   \item Look for the Client ID in the OAuth 2.0 client IDs section. You can click the application name for details.
+#' }
+#'
+#' To enable Analytics API for your project, do the following:
+#'
+#' \enumerate{
+#'   \item Open the \href{https://console.developers.google.com/project/_/apiui/api/analytics/overview}{Analytics API Overview page}.
+#'   \item CLick on the \emph{Enable API} button to activate Analytics API.
+#' }
 #'
 #' There 3 ways to use custom Client ID and Client secret:
 #'
 #' \enumerate{
 #'   \item Pass the \code{client.id} and \code{client.secret} arguments directly in the \code{authorize()} function call
 #'   \item Set the \env{RGA_CLIENT_ID} and \env{RGA_CLIENT_SECRET} environment variables
-#'   \item Set the \code{rga.client.id} and \code{rga.client.secret} options
+#'   \item Set the \code{rga.client.id} and \code{rga.client.secret} options into the R session
 #' }
 #'
 #' @section Revoke access application:
@@ -130,7 +144,6 @@ fix_username <- function(x) {
 #' }
 #'
 #' @export
-#'
 authorize <- function(username = getOption("rga.username"),
                       client.id = getOption("rga.client.id"),
                       client.secret = getOption("rga.client.secret"),
@@ -160,7 +173,7 @@ authorize <- function(username = getOption("rga.username"),
     if (is.character(cache) && nzchar(cache))
         message(sprintf("Access token will be stored in the '%s' file.", cache))
     token <- httr::oauth2.0_token(endpoint = endpoint, app = app, cache = cache,
-                            scope = "https://www.googleapis.com/auth/analytics.readonly")
+                                  scope = "https://www.googleapis.com/auth/analytics.readonly")
     if (validate_token(token))
         set_token(token)
     return(invisible(token))

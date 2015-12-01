@@ -30,8 +30,7 @@ strip_ops <- function(x) {
 
 # Capitalize strings
 capitalize <- function(x) {
-    stopifnot(is.character(x))
-    paste0(toupper(substring(x, 1, 1)), substring(x, 2))
+    gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2", x, perl = TRUE)
 }
 
 #' @title Convert camelCase character vector to separated
@@ -40,27 +39,56 @@ capitalize <- function(x) {
 #' @param sep a character string to separate the terms.
 #'
 #' @keywords internal
-#'
 #' @noRd
-#'
 to_separated <- function(x, sep = ".") {
-    x <- gsub("PropertyId", "propertyId", x, fixed = TRUE)
-    x <- gsub("-", ".", x, fixed = TRUE)
-    x <- gsub("ids", "profile.id", x, fixed = TRUE)
-    gsub("([[:lower:]])([[:upper:]])", paste0("\\1", sep, "\\L\\2"), x, perl = TRUE)
+    x <- gsub("(.)([[:upper:]][[:lower:]]+)", paste0("\\1", sep, "\\2"), x)
+    x <- gsub("([[:lower:][:digit:]])([[:upper:]])", paste0("\\1", sep, "\\2"), x)
+    x <- gsub(paste0("\\", sep, "+"), sep, x)
+    tolower(x)
 }
 
-# Convert data types
-convert_datatypes <- function(x) {
-    stopifnot(is.list(x))
-    chars <- vapply(x, is.character, logical(1L))
-    x[chars] <- lapply(x[chars], utils::type.convert, as.is = TRUE)
-    lists <- vapply(x, is.list, logical(1L))
-    x[lists] <- lapply(x[lists], convert_datatypes)
-    names(x) <- to_separated(names(x), sep = ".")
+rename_params <- function(x) {
+    x <- gsub("PropertyId", "propertyId", x, fixed = TRUE)
+    x <- gsub("ids", "profile.id", x, fixed = TRUE)
+    x <- gsub("start-date", "start.date", x, fixed = TRUE)
+    x <- gsub("end-date", "end.date", x, fixed = TRUE)
+    x <- gsub("max-results", "max.results", x, fixed = TRUE)
+    x <- gsub("start-index", "start.index", x, fixed = TRUE)
+    x <- gsub("include-empty-rows", "include.empty.rows", x, fixed = TRUE)
+    to_separated(x)
+}
+
+convert_names <- function(x) {
+    nm <- names(x)
+    if(!is.null(nm)) {
+        nm <- rename_params(nm)
+        names(x) <- nm
+    }
     return(x)
 }
 
+# Convert data types
+convert_types <- function(x, ...) {
+    UseMethod("convert_type")
+}
+
+convert_types.character <- function(x) {
+    idx <- grep("^(true|false)$", x)
+    if (length(idx))
+        x[idx] <- toupper(x[idx])
+    utils::type.convert(x, as.is = TRUE)
+}
+
+convert_types.list <- function(x) {
+    chars <- vapply(x, is.character, logical(1L))
+    x[chars] <- lapply(x[chars], convert_types.character)
+    return(x)
+}
+
+convert_types.data.frame <- function(x) {
+    convert_types.list(x)
+}
+
 parse_params <- function(x) {
-    to_separated(gsub("^[a-z]+:", "", unlist(strsplit(x, ",", fixed = TRUE))), sep = ".")
+    rename_params(gsub("^[a-z]+:", "", unlist(strsplit(x, ",", fixed = TRUE))))
 }

@@ -85,41 +85,18 @@ ga_data &lt;-<span class="st"> </span><span class="kw">get_ga</span>(<span class
 <p>To authorize of the new Google Analytics account use <code>new.auth</code> argument when <code>authorize()</code> function call.</p>
 <div id="obtain-oauth-2.0-credentials" class="section level2">
 <h2>Obtain OAuth 2.0 credentials</h2>
-<p><code>RGA</code> package provides predefined <strong>Client ID</strong> and <strong>Client secret</strong>, but you may need to create a new application in <a href="https://console.developers.google.com/">Google Developers Console</a> and obtain a <strong>Client ID</strong> and <strong>Client secret</strong> to access to the Google Analytics API.</p>
-<p>Step by step instructions are as follows:</p>
+<p><code>RGA</code> package provides predefined <strong>Client ID</strong> and <strong>Client secret</strong>, but we recomend to obtain your own a <strong>Client ID</strong> and <strong>Client secret</strong> to access to the Google Analytics API.</p>
+<p>To find your project’s client ID and client secret, do the following:</p>
 <ol style="list-style-type: decimal">
-<li>Creation of a new project (can be skipped if the project is already created):
-<ul>
-<li>Open the page <a href="https://console.developers.google.com/project" class="uri">https://console.developers.google.com/project</a> in your favorite browser;</li>
-<li>Click on <strong>Create Project</strong> blue button at the top left of the page;</li>
-<li>Enter the name of the project into the <strong>PROJECT NAME</strong> field in the pop-up window;</li>
-<li>Click <strong>Create</strong> to confirm the creation of the project.</li>
-</ul></li>
-<li>Enabling access to the Google Analytics API:
-<ul>
-<li>Select your project from the project list on &lt;<a href="https://console.developers.google.com/project" class="uri">https://console.developers.google.com/project</a> page&gt;;</li>
-<li>Select <strong>APIs &amp; auth</strong> and then <strong>APIs</strong> sub-menu in the left sidebar;</li>
-<li>Click on the <strong>Analytics API</strong> link in the <strong>Advertising APIs</strong> section;</li>
-<li>Click <strong>Enable API</strong> for activation <strong>Analytics API</strong>.</li>
-</ul></li>
-<li>Creating a new application:
-<ul>
-<li>Select <strong>APIs &amp; auth</strong> and then <strong>Credentials</strong> sub-menu in the left sidebar;</li>
-<li>Click on <strong>Add credentials</strong> blue button at the top left of the page;</li>
-<li>Select <strong>OAuth 2.0 client ID</strong> in the pop-up window;</li>
-<li>Select <strong>Other</strong> from Application type list;</li>
-<li>Change name of the client if you need;</li>
-<li>Click on the <strong>Create</strong> blue button to confirm the creation of the client ID.</li>
-</ul></li>
-<li>Obtaining Client ID and Client secret:
-<ul>
-<li>Select the project from the project list on the <a href="https://console.developers.google.com/project" class="uri">https://console.developers.google.com/project</a> page;</li>
-<li>Select <strong>APIs &amp; auth</strong> and then <strong>Credentials</strong> sub-menu in the left sidebar;</li>
-<li>Click on name of the client from the <strong>Name column</strong> in the <strong>OAuth 2.0 client IDs</strong> table;</li>
-<li>Copy the values of the following fields: <strong>Client ID</strong> and <strong>Client secret</strong>.</li>
-</ul></li>
+<li>Open the <a href="https://console.developers.google.com/project/_/apiui/credential">Credentials page</a>.</li>
+<li>If you haven’t done so already, create your project’s OAuth 2.0 credentials by clicking <strong>Add credentials</strong> &gt; <strong>OAuth 2.0 client ID</strong> and select <strong>Other</strong> application type.</li>
+<li>Look for the Client ID in the OAuth 2.0 client IDs section. You can click the application name for details.</li>
 </ol>
-<p>You can return to the <a href="https://console.developers.google.com/project">Google Developers Console</a> at any time to view the <strong>Client ID</strong> and <strong>Client secret</strong> on the Client ID for native application section on Credentials page.</p>
+<p>To enable <strong>Analytics API</strong> for your project, do the following:</p>
+<ol style="list-style-type: decimal">
+<li>Open the <a href="https://console.developers.google.com/project/_/apiui/api/analytics/overview">Analytics API Overview page</a>.</li>
+<li>CLick on the <strong>Enable API</strong> button to activate <strong>Analytics API</strong>.</li>
+</ol>
 </div>
 <div id="use-environment-variables" class="section level2">
 <h2>Use environment variables</h2>

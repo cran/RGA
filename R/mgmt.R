@@ -1,19 +1,23 @@
+# Remove some field and convert dates
+fix_mgmt <- function(x) {
+    x <- x[!grepl("(self|parent|child)\\.link", names(x))]
+    if (!is.null(x$created))
+        x$created <- lubridate::ymd_hms(x$created)
+    if (!is.null(x$updated))
+        x$updated <- lubridate::ymd_hms(x$updated)
+    return(x)
+}
+
 # Get the Management API data
 #' @include get-data.R
 list_mgmt <- function(path, query, token) {
-    if (!is.null(query$fields))
-        query$fields <- paste("kind", "totalResults", "username", query$fields, sep = ",")
-    data_ <- get_data(c("management", path), query, token)
-    if (is.null(data_$items) || length(data_$items) == 0) {
+    json_content <- get_data(path, query, token)
+    if (is.null(json_content$items) || length(json_content$items) == 0) {
         message("No results were obtained.")
         return(invisible(NULL))
     }
-    res <- data_$items
-    if (!is.null(res$created))
-        res$created <- as.POSIXct(strptime(res$created, format = "%Y-%m-%dT%H:%M:%OS", tz = "GMT"))
-    if (!is.null(res$updated))
-        res$updated <- as.POSIXct(strptime(res$updated, format = "%Y-%m-%dT%H:%M:%OS", tz = "GMT"))
-    attr(res, "username") <- data_$username
+    res <- fix_mgmt(json_content$items)
+    attr(res, "username") <- json_content$username
     return(res)
 }
 
@@ -21,13 +25,7 @@ list_mgmt <- function(path, query, token) {
 #' @include url.R
 #' @include request.R
 get_mgmt <- function(path, token) {
-    res <- GET_(get_url(c("management", path)), token)
-    res <- res[!names(res) %in% c("selfLink", "parentLink", "childLink")]
-    if (!is.null(res$permissions))
-        res$permissions <- unlist(res$permissions, use.names = FALSE)
-    if (!is.null(res$created))
-        res$created <- as.POSIXct(strptime(res$created, format = "%Y-%m-%dT%H:%M:%OS", tz = "GMT"))
-    if (!is.null(res$updated))
-        res$updated <- as.POSIXct(strptime(res$updated, format = "%Y-%m-%dT%H:%M:%OS", tz = "GMT"))
+    res <- api_request(get_url(path), token)
+    res <- fix_mgmt(res)
     return(res)
 }
