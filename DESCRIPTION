@@ -11,8 +11,8 @@ Description: Provides functions for accessing and retrieving data from the
     shiny app to explore the core reporting API dimensions and metrics.
 URL: https://github.com/artemklevtsov/RGA
 BugReports: https://github.com/artemklevtsov/RGA/issues
-Version: 0.3.1
-Date: 2015-11-30
+Version: 0.3.2
+Date: 2015-12-27
 Authors@R: c(
     person(given = "Artem", family = "Klevtsov",
     email = "a.a.klevtsov@gmail.com", role = c("aut", "cre")),
@@ -35,10 +35,10 @@ VignetteBuilder: knitr
 LazyData: true
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2015-12-01 14:05:17 UTC; xxx
+Packaged: 2015-12-27 06:14:47 UTC; xxx
 Author: Artem Klevtsov [aut, cre],
   Philipp Upravitelev [ctb],
   Olga Shramko [ctb]
 Maintainer: Artem Klevtsov <a.a.klevtsov@gmail.com>
 Repository: CRAN
-Date/Publication: 2015-12-01 15:45:15
+Date/Publication: 2015-12-27 10:25:56
