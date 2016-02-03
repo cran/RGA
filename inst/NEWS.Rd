@@ -2,6 +2,20 @@
 \title{News for Package \pkg{RGA}}
 \encoding{UTF-8}
 
+\section{Changes in RGA version 0.4.0 (2016-02-2)}{
+  \itemize{
+    \item Fixed links in the \code{authorize()} related docs
+    \item Fixed issues related with the \CRANpkg{httr} 1.1.0 update
+    \item Updated required minimal \CRANpkg{httr} version to 1.1.0
+    \item \CRANpkg{rmarkdown} package added as suggested dependencies
+    \item All the names of the parameters are converted to camelCase to match the documentation
+    \item Added new \code{token} param to the \code{authorize} function to set an existing valid access token
+    \item Fixed a nested data frames produced by the Management API list methods
+    \item Updated documentation
+    \item Some inner code improvements
+  }
+}
+
 \section{Changes in RGA version 0.3.2 (2015-12-27)}{
   \itemize{
     \item Updated data
@@ -29,7 +43,7 @@
   }
 }
 
-\section{Changes in RGA version 0.3 (2015-10-23)}{
+\section{Changes in RGA version 0.3.0 (2015-10-23)}{
   \itemize{
     \item Updated data
     \item Removed \sQuote{Common Queries} vegnette. See references in the \code{get_ga()} help page
@@ -90,7 +104,7 @@
   }
 }
 
-\section{Changes in RGA version 0.2 (2015-02-02)}{
+\section{Changes in RGA version 0.2.0 (2015-02-02)}{
   \itemize{
     \item Updated data
     \item Fixed package descrition in the DESCRIPTION file
@@ -162,7 +176,7 @@
   }
 }
 
-\section{Changes in RGA version 0.1 (2014-08-19)}{
+\section{Changes in RGA version 0.1.0 (2014-08-19)}{
   \itemize{
     \item Initial release
   }

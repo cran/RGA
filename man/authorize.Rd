@@ -7,7 +7,7 @@
 authorize(username = getOption("rga.username"),
   client.id = getOption("rga.client.id"),
   client.secret = getOption("rga.client.secret"),
-  cache = getOption("rga.cache"), reauth = FALSE)
+  cache = getOption("rga.cache"), reauth = FALSE, token = NULL)
 }
 \arguments{
 \item{username}{character. Google username email address hint. If not set you will need choose an account for the authorization.}
@@ -19,6 +19,8 @@ authorize(username = getOption("rga.username"),
 \item{cache}{logical or character. \code{TRUE} means to cache using the default cache file \code{.oauth-httr}, \code{FALSE} means not to cache. A string means to use the specified path as the cache file. Otherwise will be used the \code{rga.cache} option value (\code{.ga-token.rds} by default). If \code{username} argument specified token will be cached in the \code{.username-token.rds} file.}
 
 \item{reauth}{logical. Set \code{TRUE} to reauthorization with the same or different Google Analytics account.}
+
+\item{token}{A valid \code{Token2.0} object (icluding \code{TokenServiceAccount}) to setup directly.}
 }
 \value{
 A \code{\link[httr]{Token2.0}} object containing all the data required for OAuth access.
@@ -48,7 +50,7 @@ The following quota limits are shared between all \pkg{RGA} users which use the 
 To get full quota, you must register your application in the Google Developers Console. When you register a new application, you are given a unique client ID to identify each application under that project. To find your project's client ID and client secret, do the following:
 
 \enumerate{
-  \item Open the \href{https://console.developers.google.com/project/_/apiui/credential}{Credentials page}.
+  \item Open the \href{https://console.developers.google.com/projectselector/apis/credentials}{Credentials page}.
   \item Select a project (create if needed).
   \item create your project's OAuth 2.0 credentials by clicking \emph{Add credentials} > \emph{OAuth 2.0 client ID} and select \emph{Other} application type.
   \item Look for the Client ID in the OAuth 2.0 client IDs section. You can click the application name for details.
@@ -57,7 +59,7 @@ To get full quota, you must register your application in the Google Developers C
 To enable Analytics API for your project, do the following:
 
 \enumerate{
-  \item Open the \href{https://console.developers.google.com/project/_/apiui/api/analytics/overview}{Analytics API Overview page}.
+  \item Open the \href{https://console.developers.google.com/projectselector/apis/api/analytics/overview}{Analytics API Overview page}.
   \item CLick on the \emph{Enable API} button to activate Analytics API.
 }
 

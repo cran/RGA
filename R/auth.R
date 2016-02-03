@@ -35,13 +35,9 @@ validate_token <- function(token) {
         stop("Authorization error. Access token not found.")
     if (!inherits(token, "Token2.0"))
         stop(sprintf("Token is not a Token2.0 object. Found: %s.", class(token)))
-    if (!is.null(token$credentials$error)) {
-        if (token$credentials$error == "invalid_request")
-            stop("Authorization error. No access token obtained.")
-        if (token$credentials$error == "invalid_client")
-            stop("Authorization error. Please check client.id and client.secret.")
-    }
-    return(TRUE)
+    if(!token$validate())
+        token$refresh()
+    token$validate()
 }
 
 # Check environment variables exists
@@ -66,6 +62,7 @@ fix_username <- function(x) {
 #' @param client.secret character. OAuth client secret. If you set the environment variable \env{RGA_CLIENT_SECRET} it is used.
 #' @param cache logical or character. \code{TRUE} means to cache using the default cache file \code{.oauth-httr}, \code{FALSE} means not to cache. A string means to use the specified path as the cache file. Otherwise will be used the \code{rga.cache} option value (\code{.ga-token.rds} by default). If \code{username} argument specified token will be cached in the \code{.username-token.rds} file.
 #' @param reauth logical. Set \code{TRUE} to reauthorization with the same or different Google Analytics account.
+#' @param token A valid \code{Token2.0} object (icluding \code{TokenServiceAccount}) to setup directly.
 #'
 #' @details
 #'
@@ -89,7 +86,7 @@ fix_username <- function(x) {
 #' To get full quota, you must register your application in the Google Developers Console. When you register a new application, you are given a unique client ID to identify each application under that project. To find your project's client ID and client secret, do the following:
 #'
 #' \enumerate{
-#'   \item Open the \href{https://console.developers.google.com/project/_/apiui/credential}{Credentials page}.
+#'   \item Open the \href{https://console.developers.google.com/projectselector/apis/credentials}{Credentials page}.
 #'   \item Select a project (create if needed).
 #'   \item create your project's OAuth 2.0 credentials by clicking \emph{Add credentials} > \emph{OAuth 2.0 client ID} and select \emph{Other} application type.
 #'   \item Look for the Client ID in the OAuth 2.0 client IDs section. You can click the application name for details.
@@ -98,7 +95,7 @@ fix_username <- function(x) {
 #' To enable Analytics API for your project, do the following:
 #'
 #' \enumerate{
-#'   \item Open the \href{https://console.developers.google.com/project/_/apiui/api/analytics/overview}{Analytics API Overview page}.
+#'   \item Open the \href{https://console.developers.google.com/projectselector/apis/api/analytics/overview}{Analytics API Overview page}.
 #'   \item CLick on the \emph{Enable API} button to activate Analytics API.
 #' }
 #'
@@ -148,7 +145,11 @@ authorize <- function(username = getOption("rga.username"),
                       client.id = getOption("rga.client.id"),
                       client.secret = getOption("rga.client.secret"),
                       cache = getOption("rga.cache"),
-                      reauth = FALSE) {
+                      reauth = FALSE, token = NULL) {
+    if (!is.null(token) && validate_token(token)) {
+        set_token(token)
+        return(invisible(token))
+    }
     if (all(env_exists("RGA_CLIENT_ID", "RGA_CLIENT_SECRET"))) {
         message("Client ID and Client secret loaded from environment variables.")
         client.id <- Sys.getenv("RGA_CLIENT_ID")

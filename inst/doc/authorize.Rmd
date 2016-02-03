@@ -31,14 +31,14 @@ When the `authorize()` function is used, the `Token` variable is created in the 
 
 ```r
 list_profiles()
-ga_data <- get_ga(profile.id = "ga:XXXXXXXX")
+ga_data <- get_ga(profileId = "ga:XXXXXXXX")
 ```
 
 Access token can also be stored in a variable and passed as the argument to the functions which request the API Google Analytics. It can be useful when you are working with several accounts at the same time (for details see below).
 
 ```r
 ga_token <- authorize(client.id = "client_id", client.secret = "client_secret")
-ga_data <- get_ga(profile.id = "ga:XXXXXXXX", token = ga_token)
+ga_data <- get_ga(profileId = "ga:XXXXXXXX", token = ga_token)
 ```
 
 To authorize of the new Google Analytics account use `new.auth` argument when `authorize()` function call.
@@ -49,13 +49,13 @@ To authorize of the new Google Analytics account use `new.auth` argument when `a
 
 To find your project's client ID and client secret, do the following:
 
-1. Open the [Credentials page](https://console.developers.google.com/project/_/apiui/credential).
+1. Open the [Credentials page](https://console.developers.google.com/projectselector/apis/credentials).
 2. If you haven't done so already, create your project's OAuth 2.0 credentials by clicking **Add credentials** > **OAuth 2.0 client ID** and select **Other** application type.
 3. Look for the Client ID in the OAuth 2.0 client IDs section. You can click the application name for details.
 
 To enable **Analytics API** for your project, do the following:
 
-1. Open the [Analytics API Overview page](https://console.developers.google.com/project/_/apiui/api/analytics/overview).
+1. Open the [Analytics API Overview page](https://console.developers.google.com/projectselector/apis/api/analytics/overview).
 2. CLick on the **Enable API** button to activate **Analytics API**.
 
 ## Use environment variables
