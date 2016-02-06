@@ -2,7 +2,16 @@
 \title{News for Package \pkg{RGA}}
 \encoding{UTF-8}
 
-\section{Changes in RGA version 0.4.0 (2016-02-2)}{
+\section{Changes in RGA version 0.4.1 (2016-02-06)}{
+  \itemize{
+    \item Updated data
+    \item Fixed \code{samplingLevel} param name in the \code{get_ga()} and \code{get_mcf()} functions
+    \item Changed the minimal \R version to 3.2.0
+    \item Fixed the documentation returns items names
+  }
+}
+
+\section{Changes in RGA version 0.4.0 (2016-02-02)}{
   \itemize{
     \item Fixed links in the \code{authorize()} related docs
     \item Fixed issues related with the \CRANpkg{httr} 1.1.0 update
