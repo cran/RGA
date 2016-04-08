@@ -6,6 +6,7 @@ get_first_profile <- function(token) {
 }
 
 # Get the Anaytics reporting data
+#' @importFrom lubridate ymd_h ymd
 #' @include query.R
 #' @include get-data.R
 #' @include profiles.R
@@ -30,17 +31,19 @@ get_report <- function(path, query, token, by = NULL) {
         profile <- json_content$profileInfo
         timezone <- get_profile(profile$accountId, profile$webPropertyId, profile$profileId, token)$timezone
         if (!is.null(res$dateHour))
-            res$dateHour <- lubridate::ymd_h(res$dateHour, tz = timezone)
+            res$dateHour <- ymd_h(res$dateHour, tz = timezone)
         if (!is.null(res[["date"]]))
-            res[["date"]] <- lubridate::ymd(res[["date"]], tz = timezone)
+            res[["date"]] <- ymd(res[["date"]], tz = timezone)
         if (!is.null(res$conversionDate))
-            res$conversionDate <- lubridate::ymd(res$conversionDate, tz = timezone)
+            res$conversionDate <- ymd(res$conversionDate, tz = timezone)
     }
     attr(res, "profileInfo") <- json_content$profileInfo
     names(json_content$query) <- rename_params(names(json_content$query))
     attr(res, "query") <- json_content$query
     attr(res, "sampled") <- json_content$containsSampledData
-    if (!is.null(json_content$contains.sampled.data) && isTRUE(json_content$contains.sampled.data)) {
+    if (!is.null(json_content$containsSampledData) && isTRUE(json_content$containsSampledData)) {
+        json_content$sampleSize <- as.numeric(json_content$sampleSize)
+        json_content$sampleSpace <- as.numeric(json_content$sampleSpace)
         attr(res, "sampleSize") <- json_content$sampleSize
         attr(res, "sampleSpace") <- json_content$sampleSpace
         samplePerc <- json_content$sampleSize / json_content$sampleSpace * 100

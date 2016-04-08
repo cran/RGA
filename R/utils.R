@@ -67,11 +67,12 @@ convert_types <- function(x, ...) {
     UseMethod("convert_type")
 }
 
+#' @importFrom utils type.convert
 convert_types.character <- function(x) {
     idx <- grep("^(true|false)$", x)
     if (length(idx))
         x[idx] <- toupper(x[idx])
-    utils::type.convert(x, as.is = TRUE)
+    type.convert(x, as.is = TRUE)
 }
 
 convert_types.list <- function(x) {
@@ -89,5 +90,5 @@ parse_params <- function(x) {
 }
 
 sum_by <- function(x, name) {
-    sum(vapply(x, function(x) x[[name]], numeric(1)))
+    sum(vapply(x, function(x) as.numeric(x[[name]]), numeric(1)))
 }
